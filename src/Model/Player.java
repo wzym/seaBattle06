@@ -1,5 +1,16 @@
 package Model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Player {
-    private Ship[] fleet;
+    private List<Ship> fleet;
+
+    {
+        fleet = new ArrayList<Ship>();
+    }
+
+    private void setShipsAutomatically() {
+
+    }
 }
