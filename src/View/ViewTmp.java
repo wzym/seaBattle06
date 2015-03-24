@@ -33,7 +33,7 @@ public class ViewTmp {
                         System.out.print("~H~");
                         break;
                     case BUFFER:
-                        System.out.print("~~~");
+                        System.out.print("~B~");
                         break;
                     case DAMAGED_SHIP:
                         System.out.print("~+~");
