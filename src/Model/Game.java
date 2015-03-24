@@ -4,9 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
+    private static Game game;
+    public static synchronized Game getGame() {
+        if (null ==  game) game = new Game();
+        return game;
+    }
     public static int WIDTH;
     public static int HEIGHT;
-    public int[][] configOfShips;
+    public static int[][] configOfShips;
     private List<String> namesForShip;
     private Player player1;
     private Player player2;
@@ -23,18 +28,19 @@ public class Game {
         String[] names = new String[] {
                 "Стремительный", "Коварный", "Летящий", "Упорный", "Леденящий", "Двенадцатый", "Контролирующий",
                 "Подводный", "Невероятный", "Чёрный", "Гладкий", "Светящийся", "Разящий", "Бездомный", "Нескончаемый",
-                "Бесшовный", "Крылатый", "Пронзительный", "Центральный", "Говорящий", "Стрела", "Обходящий"
+                "Бесшовный", "Крылатый", "Пронзительный", "Центральный", "Говорящий", "Стрела", "Обходящий",
+                "Прохладный", "Северный"
         };
         namesForShip = new ArrayList<String>();
         for (String name : names) {
             namesForShip.add(name);
         }
         player1 = new Player();
-        player2 = new Player();
+        //player2 = new Player();
     }
 
     public Game() {
-        player1.setOneShip(getRandomNameForShip(), 1, 1, 4, true);
+
 
     }
 
