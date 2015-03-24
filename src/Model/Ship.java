@@ -10,6 +10,7 @@ public class Ship {
         private int x;
         private int y;
         private isAlive status;
+        private Cell cell;
     }
 
     public enum isAlive {       // статус касается состояния палубы и состояния корабля
@@ -20,6 +21,7 @@ public class Ship {
         this.body = new Deck[length];       // инициализируем тело корабля как набор живых палуб
         for (Deck deck : this.body) {
             deck.status = isAlive.ALIVE;
+            deck.cell = Cell.DECK;
         }
         this.isHorizontal = isHorizontal;
         this.status = isAlive.ALIVE;        // статус корабля - жив
