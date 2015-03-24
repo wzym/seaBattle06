@@ -23,8 +23,8 @@ public class ViewTmp {
             System.out.print(this.numberToLetter[i]);
         }
         System.out.println();
-        for (int y = 1; y < Game.HEIGHT; y++) {         // считаем с единицы из-за места для буфера кораблей; к тому же, удобней
-            for (int x = 1; x < Game.WIDTH; x++) {
+        for (int y = 1; y <= Game.HEIGHT; y++) {         // считаем с единицы из-за места для буфера кораблей; к тому же, удобней
+            for (int x = 1; x <= Game.WIDTH; x++) {
                 switch (this.dataToView[x][y].getStatus()) {
                     case WATER:
                         System.out.print("~~~");
