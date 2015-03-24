@@ -1,11 +1,13 @@
 package Model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Game {
     private static Game game;
     public static synchronized Game getGame() {
+        System.out.println(game);
         if (null ==  game) game = new Game();
         return game;
     }
@@ -32,9 +34,7 @@ public class Game {
                 "Прохладный", "Северный"
         };
         namesForShip = new ArrayList<String>();
-        for (String name : names) {
-            namesForShip.add(name);
-        }
+        Collections.addAll(namesForShip, names);
         player1 = new Player();
         //player2 = new Player();
     }

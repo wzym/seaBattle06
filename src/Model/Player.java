@@ -36,9 +36,15 @@ public class Player {
 
 
     private void setShipsAutomatically() {
+        for (int[] configOfShip : Game.configOfShips) {
+            for (int i = 0; i < configOfShip[1]; i++) {
+                VariantOfPosition var = ArtificialIntelligence.getGameBrain().getOneVariant(configOfShip[0], this.field);
+                this.setOneShip("dk", var.getxOfHead(), var.getyOfHead(), configOfShip[0], var.isHorizontal());
+            }
+        }
 
-        VariantOfPosition variant = ArtificialIntelligence.getGameBrain().getOneVariant(4, this.field);
-        this.setOneShip("DiSnuff", variant.getxOfHead(), variant.getyOfHead(), 4, variant.isHorizontal());
+        //VariantOfPosition variant = ArtificialIntelligence.getGameBrain().getOneVariant(4, this.field);
+        //this.setOneShip("DiSnuff", variant.getxOfHead(), variant.getyOfHead(), 4, variant.isHorizontal());
     }
 
     public void setOneShip(String name, int xOfHead, int yOfHead, int length, boolean isHorizontal) {
