@@ -39,7 +39,7 @@ public class Player {
         for (int[] configOfShip : Game.configOfShips) {
             for (int i = 0; i < configOfShip[1]; i++) {
                 VariantOfPosition var = ArtificialIntelligence.getGameBrain().getOneVariant(configOfShip[0], this.field);
-                this.setOneShip("dk", var.getxOfHead(), var.getyOfHead(), configOfShip[0], var.isHorizontal());
+                this.setOneShip(Game.getRandomNameForShip(), var.getxOfHead(), var.getyOfHead(), configOfShip[0], var.isHorizontal());
             }
         }
 
@@ -48,7 +48,7 @@ public class Player {
     }
 
     public void setOneShip(String name, int xOfHead, int yOfHead, int length, boolean isHorizontal) {
-        this.fleet.put(name, new Ship(isHorizontal));               // добавляем именованный корабль во флот
+        this.fleet.put(name, new Ship());               // добавляем именованный корабль во флот
         for (int i = 0; i < length; i++) {
             this.field[xOfHead][yOfHead].setStatus(Cell.Status.DECK);       // отмечает на поле тело корабля
             this.fleet.get(name).getBody().add(field[xOfHead][yOfHead]);    // сохраняем эти ячейки в массив как палубы
@@ -71,10 +71,6 @@ public class Player {
             this.field[xOfHead][yOfHead - length - 1].setStatus(Cell.Status.BUFFER);    // выше головы
             this.field[xOfHead][yOfHead].setStatus(Cell.Status.BUFFER);                 // ниже хвоста
         }
-    }
-
-    public Map<String, Ship> getFleet() {
-        return fleet;
     }
 
     public Cell[][] getField() {

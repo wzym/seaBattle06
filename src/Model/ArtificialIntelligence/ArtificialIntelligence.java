@@ -21,7 +21,6 @@ public class ArtificialIntelligence {
     /**
      * Синхронизацию используем, так как этот экземпляр будет заниматься как расстановкой кораблей,
      * так и выбором цели для стрельбы
-     * @return
      */
     public static synchronized ArtificialIntelligence getGameBrain() {
         if (null == gameBrain) gameBrain = new ArtificialIntelligence();
@@ -57,13 +56,5 @@ public class ArtificialIntelligence {
         this.setAllPossibleVariantsOfPosition(length, field);
         int key = (int) Math.round(Math.random() * (this.allPossibleVariantsOfPosition.size() - 1));
         return this.allPossibleVariantsOfPosition.get(key);
-    }
-
-    public void getAll() {
-        for (VariantOfPosition variantOfPosition : allPossibleVariantsOfPosition) {
-            System.out.print(variantOfPosition.getxOfHead());
-            System.out.print(variantOfPosition.getyOfHead());
-            System.out.println(variantOfPosition.isHorizontal());
-        }
     }
 }

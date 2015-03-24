@@ -5,7 +5,6 @@ import java.util.Set;
 
 public class Ship {
     private String name;
-    private boolean isHorizontal;
     private isAlive status;
     private Set<Cell> body = new HashSet<Cell>();     // все данные о координатах теперь - это поля Field,
                                                       // поэтому корабль - это коллекция палуб
@@ -14,8 +13,7 @@ public class Ship {
         ALIVE, INJURED, DEAD
     }
 
-    public Ship(boolean isHorizontal) {
-        this.isHorizontal = isHorizontal;
+    public Ship() {
         this.status = isAlive.ALIVE;        // статус корабля - жив
     }
 

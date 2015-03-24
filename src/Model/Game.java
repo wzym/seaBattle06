@@ -14,7 +14,7 @@ public class Game {
     public static int WIDTH;
     public static int HEIGHT;
     public static int[][] configOfShips;
-    private List<String> namesForShip;
+    private static List<String> namesForShip;
     private Player player1;
     private Player player2;
 
@@ -36,24 +36,17 @@ public class Game {
         namesForShip = new ArrayList<String>();
         Collections.addAll(namesForShip, names);
         player1 = new Player();
-        //player2 = new Player();
-    }
-
-    public Game() {
-
-
+        player2 = new Player();
     }
 
     public Player getPlayer1() {
         return player1;
     }
 
-    public Player getPlayer2() {
-        return player2;
-    }
 
-    public String getRandomNameForShip() {
-        int key = (int) Math.round(Math.random() * namesForShip.size());
+    public static String getRandomNameForShip() {
+        int key = (int) Math.round(Math.random() * (namesForShip.size() - 1));
+        if (key < 0) key = 0;
         return namesForShip.remove(key);
     }
 }
