@@ -9,7 +9,8 @@ public class Player {
     private Map<String, Ship> fleet;
 
     {
-        this.field = new Cell[Game.WIDTH + 2][Game.HEIGHT + 2]; // +2 - для установки буфера по периметру
+        this.field = new Cell[ConfigOfGame.getMe().getWidth() + 2]
+                [ConfigOfGame.getMe().getHeight() + 2]; // +2 - для установки буфера по периметру
         this.fleet = new HashMap<String, Ship>();
     }
 
@@ -19,27 +20,29 @@ public class Player {
     }
 
     private void setWaterAndBuffer() {
-        for (int i = 1; i <= Game.HEIGHT; i++) {         // инициализация поля, устанавливаем ячейки с водой
-            for (int j = 1; j <= Game.WIDTH; j++) {
+        for (int i = 1; i <= ConfigOfGame.getMe().getHeight(); i++) {         // инициализация поля, устанавливаем ячейки с водой
+            for (int j = 1; j <= ConfigOfGame.getMe().getWidth(); j++) {
                 this.field[j][i] = new Cell(Cell.Status.WATER);
             }
         }
-        for (int i = 0; i < Game.HEIGHT + 2; i++) {
+        for (int i = 0; i < ConfigOfGame.getMe().getHeight() + 2; i++) {
             this.field[0][i] = new Cell(Cell.Status.BUFFER);     // устанавливаем левый буфер
-            this.field[Game.WIDTH + 1][i] = new Cell(Cell.Status.BUFFER);         // правый
+            this.field[ConfigOfGame.getMe().getWidth() + 1][i] = new Cell(Cell.Status.BUFFER);         // правый
         }
-        for (int i = 0; i < Game.WIDTH + 2; i++) {
+        for (int i = 0; i < ConfigOfGame.getMe().getWidth() + 2; i++) {
             this.field[i][0] = new Cell(Cell.Status.BUFFER);     // верхний буфер
-            this.field[i][Game.HEIGHT + 1] = new Cell(Cell.Status.BUFFER);     // нижний
+            this.field[i][ConfigOfGame.getMe().getHeight() + 1] = new Cell(Cell.Status.BUFFER);     // нижний
         }
     }
 
 
     private void setShipsAutomatically() {
-        for (int[] configOfShip : Game.configOfShips) {
+        for (int[] configOfShip : ConfigOfGame.getMe().getConfigOfShips()) {
             for (int i = 0; i < configOfShip[1]; i++) {
-                VariantOfPosition var = ArtificialIntelligence.getGameBrain().getOneVariant(configOfShip[0], this.field);
-                this.setOneShip(Game.getRandomNameForShip(), var.getxOfHead(), var.getyOfHead(), configOfShip[0], var.isHorizontal());
+                VariantOfPosition var = ArtificialIntelligence.getGameBrain().
+                        getOneVariant(configOfShip[0], this.field);
+                this.setOneShip(ConfigOfGame.getRandomNameForShip(), var.getxOfHead(),
+                        var.getyOfHead(), configOfShip[0], var.isHorizontal());
             }
         }
 
