@@ -18,7 +18,7 @@ public class Player {
     public Player() {
         this.setWaterAndBuffer();
         this.setShipsAutomatically();
-        this.getFire(3, 6);
+
     }
 
     private void setWaterAndBuffer() {

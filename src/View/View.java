@@ -2,11 +2,12 @@ package View;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import Controller.Game;
 import Model.Cell;
 import Model.ConfigOfGame;
-import Model.Player;
 
 public class View extends JFrame {
     private final JFrame frame = new JFrame("Морской бой 06");
@@ -24,6 +25,7 @@ public class View extends JFrame {
         game.add(exit);
         menuBar.add(game);
         menuBar.add(about);
+
         fieldOfFirstPlayer = new JButton[ConfigOfGame.get().height() + 1][ConfigOfGame.get().width() + 1];
         fieldOfSecondPlayer =  new JButton[ConfigOfGame.get().height() + 1][ConfigOfGame.get().width() + 1];
         this.numberToLetter = new char[]      // массив для вывода координаты "x" в буквенном кириллическом виде
@@ -31,20 +33,39 @@ public class View extends JFrame {
                         'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Ы', 'Э', 'Ю', 'Я'};
     }
 
-    public View(Cell[][] data1, Cell[][] data2) {
+    public View(final Cell[][] data1, Cell[][] data2) {
         frame.setLayout(new BorderLayout());
         frame.setSize(1100, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JPanel panel = new JPanel(new GridLayout(11, 11));
-        JPanel panel2 = new JPanel(new GridLayout(11, 11));
+        final JPanel panel = new JPanel(new GridLayout(11, 11));
+        final JPanel panel2 = new JPanel(new GridLayout(11, 11));
         panel.setLocation(20, 20);
         panel2.setLocation(520, 20);
         panel.setSize(480, 480);
         panel2.setSize(480, 480);
 
-        this.initField(fieldOfFirstPlayer, panel, data1);
-        this.initField(fieldOfSecondPlayer, panel2, data2);
+        restart.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                fieldOfFirstPlayer[3][4].setBackground(Color.red);
+            }
+        });
+        about.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+        exit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+
+        this.initFieldByData(fieldOfFirstPlayer, panel, data1);
+        this.initFieldByData(fieldOfSecondPlayer, panel2, data2);
 
         frame.add(menuBar, BorderLayout.NORTH);
 
@@ -57,7 +78,7 @@ public class View extends JFrame {
         frame.setVisible(true);
     }
 
-    private void initField(JButton[][] field, JPanel panel, Cell[][] dateToView) {
+    private void initFieldByData(JButton[][] field, JPanel panel, Cell[][] dateToView) {
         field[0][0] = new JButton();
 
         for (int y = 1; y <= ConfigOfGame.get().height(); y++) {
@@ -91,6 +112,15 @@ public class View extends JFrame {
                         field[x][y].setBackground(Color.red);
                         break;
                 }
+
+                final int finalX = x;
+                final int finalY = y;
+                field[x][y].addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        fieldOfFirstPlayer[finalX][finalY].setBackground(Color.red);
+                    }
+                });
             }
         }
 
