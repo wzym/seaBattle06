@@ -7,8 +7,7 @@ import java.util.List;
 public class Game {
     private static Game game;
     public static synchronized Game getGame() {
-        System.out.println(game);
-        if (null ==  game) game = new Game();
+        if (null == game) game = new Game();
         return game;
     }
     public static int WIDTH;
