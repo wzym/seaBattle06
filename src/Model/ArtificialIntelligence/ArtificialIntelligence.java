@@ -1,7 +1,6 @@
 package Model.ArtificialIntelligence;
 
 import Model.ConfigOfGame;
-import Model.Game;
 import Model.Cell;
 
 import java.util.LinkedList;
@@ -9,15 +8,7 @@ import java.util.List;
 
 public class ArtificialIntelligence {
     private static ArtificialIntelligence gameBrain;        // попытка реализовать синглтон
-    private List<VariantOfPosition> allPossibleVariantsOfPosition;
-
-    private ArtificialIntelligence() {
-
-    }
-
-    {
-        allPossibleVariantsOfPosition = new LinkedList<VariantOfPosition>();
-    }
+    private List<VariantOfPosition> allPossibleVariantsOfPosition = new LinkedList<VariantOfPosition>();
 
     /**
      * Синхронизацию используем, так как этот экземпляр будет заниматься как расстановкой кораблей,
