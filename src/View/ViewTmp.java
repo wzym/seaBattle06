@@ -19,12 +19,12 @@ public class ViewTmp {
     }
 
     private void viewField() {           // выводит поле на экран
-        for (int i = 0; i < ConfigOfGame.getMe().getWidth(); i++) {         // Выводим строчку с буквами в соответствии с шириной поля
+        for (int i = 0; i < ConfigOfGame.get().width(); i++) {         // Выводим строчку с буквами в соответствии с шириной поля
             System.out.print(this.numberToLetter[i]);
         }
         System.out.println();
-        for (int y = 1; y <= ConfigOfGame.getMe().getHeight(); y++) {         // считаем с единицы из-за места для буфера кораблей; к тому же, удобней
-            for (int x = 1; x <= ConfigOfGame.getMe().getWidth(); x++) {
+        for (int y = 1; y <= ConfigOfGame.get().height(); y++) {         // считаем с единицы из-за места для буфера кораблей; к тому же, удобней
+            for (int x = 1; x <= ConfigOfGame.get().width(); x++) {
                 switch (this.dataToView[x][y].getStatus()) {
                     case WATER:
                         System.out.print("~~~");

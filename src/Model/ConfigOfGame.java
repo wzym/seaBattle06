@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class ConfigOfGame {
-    private static volatile ConfigOfGame theOneConfig = null;
-    public static ConfigOfGame getMe() {
+    private static ConfigOfGame theOneConfig = null;
+    public static ConfigOfGame get() {
         if (null == theOneConfig)  theOneConfig = new ConfigOfGame();
         return theOneConfig;
     }
@@ -19,7 +19,7 @@ public class ConfigOfGame {
             {2, 3},
             {1, 4}      // шлюпок - четыре
     };
-    private static List<String> namesForShip = new ArrayList<String>();
+    private static List<String> namesForShip = new ArrayList<String>(24);
 
     {
         String[] names = new String[] {
@@ -31,21 +31,21 @@ public class ConfigOfGame {
         Collections.addAll(namesForShip, names);
     }
 
-    public static String getRandomNameForShip() {
+    public static String nameForShip() {
         int key = (int) Math.round(Math.random() * (namesForShip.size() - 1));
         if (key < 0) key = 0;
         return namesForShip.remove(key);
     }
 
-    public int getHeight() {
+    public int height() {
         return height;
     }
 
-    public int getWidth() {
+    public int width() {
         return width;
     }
 
-    public int[][] getConfigOfShips() {
+    public int[][] configOfShips() {
         return configOfShips;
     }
 }
