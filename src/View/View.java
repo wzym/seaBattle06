@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import Model.Cell;
+import Model.ConfigOfGame;
 import Model.Game;
 
 public class View {
@@ -30,9 +31,9 @@ public class View {
         panel.setBackground(Color.lightGray);
         panel.setVisible(true);
 
-        JLabel[][] data = new JLabel[Game.HEIGHT + 1][Game.WIDTH + 1];
-        for (int y = 1; y <= Game.HEIGHT; y++) {
-            for (int x = 1; x <= Game.WIDTH; x++) {
+        JLabel[][] data = new JLabel[ConfigOfGame.getMe().getHeight() + 1][ConfigOfGame.getMe().getWidth() + 1];
+        for (int y = 1; y <= ConfigOfGame.getMe().getHeight(); y++) {
+            for (int x = 1; x <= ConfigOfGame.getMe().getWidth(); x++) {
                 data[x][y] = new JLabel();
                 data[x][y].setText("H");
                 data[x][y].setBackground(Color.red);

@@ -1,7 +1,7 @@
 package View;
 
 import Model.Cell;
-import Model.Game;
+import Model.ConfigOfGame;
 
 public class ViewTmp {
     private Cell[][] dataToView;
@@ -19,12 +19,12 @@ public class ViewTmp {
     }
 
     private void viewField() {           // выводит поле на экран
-        for (int i = 0; i < Game.WIDTH; i++) {         // Выводим строчку с буквами в соответствии с шириной поля
+        for (int i = 0; i < ConfigOfGame.getMe().getWidth(); i++) {         // Выводим строчку с буквами в соответствии с шириной поля
             System.out.print(this.numberToLetter[i]);
         }
         System.out.println();
-        for (int y = 1; y <= Game.HEIGHT; y++) {         // считаем с единицы из-за места для буфера кораблей; к тому же, удобней
-            for (int x = 1; x <= Game.WIDTH; x++) {
+        for (int y = 1; y <= ConfigOfGame.getMe().getHeight(); y++) {         // считаем с единицы из-за места для буфера кораблей; к тому же, удобней
+            for (int x = 1; x <= ConfigOfGame.getMe().getWidth(); x++) {
                 switch (this.dataToView[x][y].getStatus()) {
                     case WATER:
                         System.out.print("~~~");
