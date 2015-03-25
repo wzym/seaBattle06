@@ -14,10 +14,10 @@ public class ConfigOfGame {
     private int height = 10;
     private int width = 10;
     private int[][] configOfShips = new int[][] {
-            {4, 1},
+            {4, 1},     // четырёхпалубный - один
             {3, 2},
             {2, 3},
-            {4, 1}
+            {1, 4}      // шлюпок - четыре
     };
     private static List<String> namesForShip = new ArrayList<String>();
 
