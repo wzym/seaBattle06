@@ -3,6 +3,7 @@ package Model;
 import java.util.*;
 import Model.ArtificialIntelligence.ArtificialIntelligence;
 import Model.ArtificialIntelligence.VariantOfPosition;
+import View.View;
 
 public class Player {
     private Cell[][] field;
@@ -17,6 +18,7 @@ public class Player {
     public Player() {
         this.setWaterAndBuffer();
         this.setShipsAutomatically();
+        this.getFire(3, 6);
     }
 
     private void setWaterAndBuffer() {
@@ -46,7 +48,7 @@ public class Player {
         }
     }
 
-    public void setOneShip(String name, int xOfHead, int yOfHead, int length, boolean isHorizontal) {
+    private void setOneShip(String name, int xOfHead, int yOfHead, int length, boolean isHorizontal) {
         this.fleet.put(name, new Ship());               // добавляем именованный корабль во флот
         for (int i = 0; i < length; i++) {
             this.field[xOfHead][yOfHead].setStatus(Cell.Status.DECK);       // отмечает на поле тело корабля
@@ -69,6 +71,21 @@ public class Player {
             }
             this.field[xOfHead][yOfHead - length - 1].setStatus(Cell.Status.BUFFER);    // выше головы
             this.field[xOfHead][yOfHead].setStatus(Cell.Status.BUFFER);                 // ниже хвоста
+        }
+    }
+
+    public void getFire(int x, int y) {
+        switch (this.field[x][y].getStatus()) {
+            case DECK:
+                this.field[x][y].setStatus(Cell.Status.DAMAGED_DECK);
+
+                break;
+            case WATER:
+                this.field[x][y].setStatus(Cell.Status.DAMAGED_WATER);
+                break;
+            case BUFFER:
+                this.field[x][y].setStatus(Cell.Status.DAMAGED_WATER);
+                break;
         }
     }
 
