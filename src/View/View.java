@@ -52,7 +52,9 @@ public class View extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (null == game) game = new Game();
-                arrangeGamersShips();
+
+                reviewFields();
+                //arrangeGamersShips();
             }
         });
         showComputerShips.addItemListener(new ItemListener() {
@@ -172,17 +174,41 @@ public class View extends JFrame {
         }
     }
 
-    private void makeFire(int x, int y) {
-        switch (game.getPlayer2().getFire(x, y)) {
-            case DAMAGED_WATER:
-                cellsOfComputer[x][y].setBackground(Color.cyan);
-                break;
-            case DAMAGED_DECK:
-                cellsOfComputer[x][y].setBackground(Color.orange);
-                break;
-            case DAMAGED_SHIP:
-                cellsOfComputer[x][y].setBackground(Color.gray);
-                break;
+    private void reviewFields() {
+        Cell[][] field1 = game.getPlayer1().getField();
+        Cell[][] field2 = game.getPlayer2().getField();
+        for (int y = 1; y <= ConfigOfGame.get().height(); y++) {
+            for (int x = 1; x <= ConfigOfGame.get().width(); x++) {
+                cellsOfGamer[x][y].setBackground(
+                        setColorByStatusOfCell(field1[x][y].getStatus())
+                );
+                cellsOfComputer[x][y].setBackground(
+                        setColorByStatusOfCell(field2[x][y].getStatus())
+                );
+            }
         }
+    }
+
+    private Color setColorByStatusOfCell(Cell.Status status) {      // функция сопоставления статусов и цветов
+        switch (status) {
+            case WATER:
+                return Color.blue;
+            case DECK:
+                return Color.black;
+            case BUFFER:
+                return Color.blue;
+            case DAMAGED_WATER:
+                return Color.cyan;
+            case DAMAGED_DECK:
+                return Color.red;
+            case DAMAGED_SHIP:
+                return Color.gray;
+        }
+        return null;
+    }
+
+    private void makeFire(int x, int y) {
+        // на выбранной ячейке меняет цвет в зависимости от нового статуса
+        cellsOfComputer[x][y].setBackground(setColorByStatusOfCell(game.getPlayer2().getFire(x, y)));
     }
 }

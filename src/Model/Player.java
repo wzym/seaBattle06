@@ -80,7 +80,9 @@ public class Player {
             case DECK:
                 this.field[x][y].setStatus(Cell.Status.DAMAGED_DECK);
                 Ship injuredShip = this.getShipByCell(x, y);  // получаем поражённый корабль
-                if (injuredShip.getDamage(x, y) == Ship.isAlive.DEAD) this.fleet.remove(injuredShip.getName());
+                if (injuredShip.getDamage(x, y) == Ship.isAlive.DEAD) {
+                    //this.fleet.remove(injuredShip.getName());
+                }
                 break;
             case WATER:
                 this.field[x][y].setStatus(Cell.Status.DAMAGED_WATER);
@@ -101,5 +103,9 @@ public class Player {
 
     public Map<String, Ship> getFleet() {
         return fleet;
+    }
+
+    public Cell[][] getField() {
+        return field;
     }
 }
