@@ -3,7 +3,6 @@ package Model;
 import java.util.*;
 import Model.ArtificialIntelligence.ArtificialIntelligence;
 import Model.ArtificialIntelligence.VariantOfPosition;
-import View.View;
 
 public class Player {
     private Cell[][] field;
@@ -51,7 +50,7 @@ public class Player {
     }
 
     private void setOneShip(String name, int xOfHead, int yOfHead, int length, boolean isHorizontal) {
-        this.fleet.put(name, new Ship());               // добавляем именованный корабль во флот
+        this.fleet.put(name, new Ship(name));               // добавляем именованный корабль во флот
         for (int i = 0; i < length; i++) {
             this.field[xOfHead][yOfHead].setStatus(Cell.Status.DECK);       // отмечает на поле тело корабля
             this.fleet.get(name).getBody().add(field[xOfHead][yOfHead]);    // сохраняем эти ячейки в массив как палубы
@@ -76,11 +75,12 @@ public class Player {
         }
     }
 
-    public void getFire(int x, int y) {
+    public Cell.Status getFire(int x, int y) {
         switch (this.field[x][y].getStatus()) {
             case DECK:
                 this.field[x][y].setStatus(Cell.Status.DAMAGED_DECK);
-
+                Ship injuredShip = this.getShipByCell(x, y);  // получаем поражённый корабль
+                System.out.println(injuredShip.getName());
                 break;
             case WATER:
                 this.field[x][y].setStatus(Cell.Status.DAMAGED_WATER);
@@ -89,10 +89,14 @@ public class Player {
                 this.field[x][y].setStatus(Cell.Status.DAMAGED_WATER);
                 break;
         }
+        return this.field[x][y].getStatus();
     }
 
-    public Cell[][] getField() {
-        return field;
+    private Ship getShipByCell(int x, int y) {
+        for (Ship ship : fleet.values()) {
+            if (null != ship.getCellByCoordinates(x, y)) return ship;
+        }
+        return null;
     }
 
     public Map<String, Ship> getFleet() {

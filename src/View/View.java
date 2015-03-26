@@ -14,6 +14,8 @@ import java.util.Map;
 public class View extends JFrame {
     private JFrame frame = new JFrame("Морской бой 0.6");
 
+    private Game game;  // пока игру будем хранить в этом классе
+
     private JMenuBar menuBar = new JMenuBar();
     private JMenu menuGame = new JMenu("Игра");
     private JMenu menuAbout = new JMenu("Справка");
@@ -47,9 +49,8 @@ public class View extends JFrame {
         menuItemRestart.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Game game = new Game();
+                if (null == game) game = new Game();
                 arrangeShips(game.getPlayer1().getFleet());
-                game.getPlayer1().getField();
             }
         });
 
@@ -103,6 +104,16 @@ public class View extends JFrame {
             for (int x = 1; x <= ConfigOfGame.get().width(); x++) {
                 cellsOfGamer[x][y] = new JButton();
                 cellsOfComputer[x][y] = new JButton();
+
+                final int finalX = x;
+                final int finalY = y;
+                cellsOfComputer[x][y].addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        makeFire(finalX, finalY);
+                    }
+                });
+
                 cellsOfGamer[x][y].setBackground(Color.blue);
                 cellsOfComputer[x][y].setBackground(Color.blue);
             }
@@ -121,6 +132,20 @@ public class View extends JFrame {
             for (Cell cell : ship.getBody()) {
                 cellsOfGamer[cell.getX()][cell.getY()].setBackground(Color.black);
             }
+        }
+    }
+
+    private void makeFire(int x, int y) {
+        switch (game.getPlayer2().getFire(x, y)) {
+            case DAMAGED_WATER:
+                cellsOfComputer[x][y].setBackground(Color.cyan);
+                break;
+            case DAMAGED_DECK:
+                cellsOfComputer[x][y].setBackground(Color.orange);
+                break;
+            case DAMAGED_SHIP:
+                cellsOfComputer[x][y].setBackground(Color.gray);
+                break;
         }
     }
 }

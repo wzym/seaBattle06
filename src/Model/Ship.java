@@ -13,11 +13,23 @@ public class Ship {
         ALIVE, INJURED, DEAD
     }
 
-    public Ship() {
+    public Ship(String name) {
+        this.name = name;
         this.status = isAlive.ALIVE;        // статус корабля - жив
+    }
+
+    public Cell getCellByCoordinates(int x, int y) {
+        for (Cell cell : body) {
+            if (cell.getX() == x && cell.getY() ==  y) return cell;
+        }
+        return null;
     }
 
     public Set<Cell> getBody() {
         return body;
+    }
+
+    public String getName() {
+        return name;
     }
 }
