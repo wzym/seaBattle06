@@ -50,7 +50,7 @@ public class Player {
     }
 
     private void setOneShip(String name, int xOfHead, int yOfHead, int length, boolean isHorizontal) {
-        this.fleet.put(name, new Ship(name));               // добавляем именованный корабль во флот
+        this.fleet.put(name, new Ship(name, length));               // добавляем именованный корабль во флот
         for (int i = 0; i < length; i++) {
             this.field[xOfHead][yOfHead].setStatus(Cell.Status.DECK);       // отмечает на поле тело корабля
             this.fleet.get(name).getBody().add(field[xOfHead][yOfHead]);    // сохраняем эти ячейки в массив как палубы
@@ -80,7 +80,7 @@ public class Player {
             case DECK:
                 this.field[x][y].setStatus(Cell.Status.DAMAGED_DECK);
                 Ship injuredShip = this.getShipByCell(x, y);  // получаем поражённый корабль
-                System.out.println(injuredShip.getName());
+                if (injuredShip.getDamage(x, y) == Ship.isAlive.DEAD) this.fleet.remove(injuredShip.getName());
                 break;
             case WATER:
                 this.field[x][y].setStatus(Cell.Status.DAMAGED_WATER);

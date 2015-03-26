@@ -9,12 +9,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Map;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 public class View extends JFrame {
     private JFrame frame = new JFrame("Морской бой 0.6");
 
-    private Game game;  // пока игру будем хранить в этом классе
+    private Game game;  // пока игру будем хранить в этом классе в этом поле
 
     private JMenuBar menuBar = new JMenuBar();
     private JMenu menuGame = new JMenu("Игра");
@@ -28,6 +29,7 @@ public class View extends JFrame {
     private JPanel fieldOfComputer =
             new JPanel(new GridLayout(ConfigOfGame.get().width() + 1, ConfigOfGame.get().height() + 1));
     private JPanel controller = new JPanel();
+    private JToggleButton showComputerShips = new JToggleButton("Показать/скрыть корабли компьютера");
 
     private JButton[][] cellsOfGamer;       // массивы кнопок для отображения поля
     private JButton[][] cellsOfComputer;
@@ -50,7 +52,17 @@ public class View extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (null == game) game = new Game();
-                arrangeShips(game.getPlayer1().getFleet());
+                arrangeGamersShips();
+            }
+        });
+        showComputerShips.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (showComputerShips.isSelected()) {
+                    arrangeComputerShips();
+                } else {
+                    paintAllComputerCells();
+                }
             }
         });
 
@@ -67,6 +79,7 @@ public class View extends JFrame {
         bothFields.setLayout(null);                 // не используем композиционную разметку, расположение - вручную
         bothFields.add(fieldOfGamer);
         bothFields.add(fieldOfComputer);
+        controller.add(showComputerShips);
 
         numberToLetter = new char[]      // массив для вывода координаты "x" в буквенном кириллическом виде
                 {'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К', 'Л', 'М', 'Н', 'О', 'П',
@@ -89,15 +102,21 @@ public class View extends JFrame {
 
     private void initializationOfFields() {
         cellsOfGamer[0][0] = new JButton();     // объявляем угловые неиспользуемые ячейки
+        cellsOfGamer[0][0].setEnabled(false);
         cellsOfComputer[0][0] = new JButton();
+        cellsOfComputer[0][0].setEnabled(false);
 
         for (int y = 1; y <= ConfigOfGame.get().height(); y++) {    // объявляем подписи вертикальной оси
             cellsOfGamer[0][y] = new JButton(String.valueOf(y));
+            cellsOfGamer[0][y].setEnabled(false);
             cellsOfComputer[0][y] = new JButton(String.valueOf(y));
+            cellsOfComputer[0][y].setEnabled(false);
         }
         for (int x = 1; x <= ConfigOfGame.get().width(); x++) {     // подписи горизонтальной оси
             cellsOfGamer[x][0] = new JButton(String.valueOf(numberToLetter[x - 1]));
+            cellsOfGamer[x][0].setEnabled(false);
             cellsOfComputer[x][0] = new JButton(String.valueOf(numberToLetter[x - 1]));
+            cellsOfComputer[x][0].setEnabled(false);
         }
 
         for (int y = 1; y <= ConfigOfGame.get().height(); y++) {        // объявляем поле
@@ -127,10 +146,28 @@ public class View extends JFrame {
         }
     }
 
-    private void arrangeShips(Map<String, Ship> fleet) {
-        for (Ship ship : fleet.values()) {
+    private void arrangeGamersShips() {
+        for (Ship ship : game.getPlayer1().getFleet().values()) {
             for (Cell cell : ship.getBody()) {
                 cellsOfGamer[cell.getX()][cell.getY()].setBackground(Color.black);
+            }
+        }
+    }
+
+    private void arrangeComputerShips() {
+        for (Ship ship : game.getPlayer2().getFleet().values()) {
+            for (Cell cell : ship.getBody()) {
+                cellsOfComputer[cell.getX()][cell.getY()].setBackground(Color.black);
+            }
+        }
+    }
+
+    private void paintAllComputerCells() {
+        for (int y = 1; y < cellsOfComputer.length; y++) {
+            JButton[] jButtons = cellsOfComputer[y];
+            for (int x = 1; x < jButtons.length; x++) {
+                JButton jButton = jButtons[x];
+                jButton.setBackground(Color.blue);
             }
         }
     }
