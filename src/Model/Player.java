@@ -7,7 +7,7 @@ import View.View;
 
 public class Player {
     private Cell[][] field;
-    private Map<String, Ship> fleet;
+    private HashMap<String, Ship> fleet;
 
     {
         this.field = new Cell[ConfigOfGame.get().width() + 2]
@@ -22,18 +22,20 @@ public class Player {
     }
 
     private void setWaterAndBuffer() {
-        for (int i = 1; i <= ConfigOfGame.get().height(); i++) {         // инициализация поля, устанавливаем ячейки с водой
+        for (int i = 1; i <= ConfigOfGame.get().height(); i++) {    // инициализация поля, устанавливаем ячейки с водой
             for (int j = 1; j <= ConfigOfGame.get().width(); j++) {
-                this.field[j][i] = new Cell(Cell.Status.WATER);
+                this.field[j][i] = new Cell(j, i, Cell.Status.WATER);
             }
         }
         for (int i = 0; i < ConfigOfGame.get().height() + 2; i++) {
-            this.field[0][i] = new Cell(Cell.Status.BUFFER);     // устанавливаем левый буфер
-            this.field[ConfigOfGame.get().width() + 1][i] = new Cell(Cell.Status.BUFFER);         // правый
+            this.field[0][i] = new Cell(0, i, Cell.Status.BUFFER);     // устанавливаем левый буфер
+            this.field[ConfigOfGame.get().width() + 1][i] =
+                    new Cell(ConfigOfGame.get().width() + 1, i, Cell.Status.BUFFER);         // правый
         }
         for (int i = 0; i < ConfigOfGame.get().width() + 2; i++) {
-            this.field[i][0] = new Cell(Cell.Status.BUFFER);     // верхний буфер
-            this.field[i][ConfigOfGame.get().height() + 1] = new Cell(Cell.Status.BUFFER);     // нижний
+            this.field[i][0] = new Cell(i, 0, Cell.Status.BUFFER);     // верхний буфер
+            this.field[i][ConfigOfGame.get().height() + 1] =
+                    new Cell(i, ConfigOfGame.get().height() + 1, Cell.Status.BUFFER);     // нижний
         }
     }
 
@@ -91,5 +93,9 @@ public class Player {
 
     public Cell[][] getField() {
         return field;
+    }
+
+    public Map<String, Ship> getFleet() {
+        return fleet;
     }
 }

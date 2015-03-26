@@ -6,12 +6,16 @@ package Model;
  */
 public class Cell {
     private Status status;
+    private int x;
+    private int y;
 
     public enum Status {
         DECK, WATER, BUFFER, DAMAGED_DECK, DAMAGED_SHIP, DAMAGED_WATER
     }
 
-    public Cell(Status status) {
+    public Cell(int x, int y, Status status) {
+        this.x = x;
+        this.y = y;
         this.setStatus(status);
     }       // конструктор
 
@@ -21,5 +25,13 @@ public class Cell {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 }
