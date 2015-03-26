@@ -23,9 +23,9 @@ public class ArtificialIntelligence {
         this.allPossibleVariantsOfPosition.clear();
         boolean isVariantSuitable = true;
 
-        for (int y = 1; y <= ConfigOfGame.getMe().getHeight(); y++) {
-            for (int x = 1; x <= ConfigOfGame.getMe().getWidth(); x++) {
-                if (x <= ConfigOfGame.getMe().getWidth() - length + 1) {     // пока не добрались до правого края
+        for (int y = 1; y <= ConfigOfGame.get().height(); y++) {
+            for (int x = 1; x <= ConfigOfGame.get().width(); x++) {
+                if (x <= ConfigOfGame.get().width() - length + 1) {     // пока не добрались до правого края
                     for (int i = 0; i < length; i++) {  // проверяем горизонтальное расположение
                         if (field[x + i][y].getStatus() != Cell.Status.WATER) isVariantSuitable = false;
                     }
@@ -33,7 +33,7 @@ public class ArtificialIntelligence {
                     isVariantSuitable = true;
                 }
 
-                if (y <= ConfigOfGame.getMe().getHeight() - length + 1) {    // пока не добрались до нижнего края
+                if (y <= ConfigOfGame.get().height() - length + 1) {    // пока не добрались до нижнего края
                     for (int i = 0; i < length; i++) {  // проверяем вертикальную позицию
                         if (field[x][y + i].getStatus() != Cell.Status.WATER) isVariantSuitable = false;
                     }
