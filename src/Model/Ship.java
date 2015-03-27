@@ -49,4 +49,8 @@ public class Ship {
     public String getName() {
         return name;
     }
+
+    public isAlive getStatus() {
+        return status;
+    }
 }
