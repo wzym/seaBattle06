@@ -12,7 +12,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Set;
 
 public class View extends JFrame {
     private JFrame frame = new JFrame("Морской бой 0.6");
@@ -54,9 +53,12 @@ public class View extends JFrame {
         menuItemRestart.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (null == game) game = new Game();
-                reviewFieldsOfGamer();
-                if (showComputerShips.isSelected()) reviewFieldsOfComputer();
+                if (null == game) {
+                    game = new Game();
+                    reviewFieldsOfGamer();
+                    if (showComputerShips.isSelected()) reviewFieldsOfComputer();
+                } else {
+                }
             }
         });
         showComputerShips.addItemListener(new ItemListener() {
