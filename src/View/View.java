@@ -2,8 +2,8 @@ package View;
 
 import Controller.Game;
 import Model.Cell;
+import Model.Cell.Status;
 import Model.ConfigOfGame;
-import Model.Ship;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Set;
 
 public class View extends JFrame {
     private JFrame frame = new JFrame("Морской бой 0.6");
@@ -52,18 +53,20 @@ public class View extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (null == game) game = new Game();
-
-                reviewFields();
-                //arrangeGamersShips();
+                reviewFieldsOfGamer();
+                if (showComputerShips.isSelected()) reviewFieldsOfComputer();
             }
         });
         showComputerShips.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (showComputerShips.isSelected()) {
-                    arrangeComputerShips();
-                } else {
-                    paintAllComputerCells();
+                if (game != null) {
+                    if (showComputerShips.isSelected()) {
+                        reviewFieldsOfGamer();
+                        reviewFieldsOfComputer();
+                    } else {
+                        paintAllComputerCells();
+                    }
                 }
             }
         });
@@ -121,7 +124,7 @@ public class View extends JFrame {
             cellsOfComputer[x][0].setEnabled(false);
         }
 
-        for (int y = 1; y <= ConfigOfGame.get().height(); y++) {        // объявляем поле
+        for (int y = 1; y <= ConfigOfGame.get().height(); y++) {        // объявляем поле, устанавливая кнопки-ячейки
             for (int x = 1; x <= ConfigOfGame.get().width(); x++) {
                 cellsOfGamer[x][y] = new JButton();
                 cellsOfComputer[x][y] = new JButton();
@@ -131,7 +134,10 @@ public class View extends JFrame {
                 cellsOfComputer[x][y].addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        makeFire(finalX, finalY);
+                        if (game != null) {     // Нажатие на кнопки вызывает действие только после запуска игры
+                            makeFire(finalX, finalY);
+                        }
+                        else System.out.println("Игра не запущена");
                     }
                 });
 
@@ -148,22 +154,6 @@ public class View extends JFrame {
         }
     }
 
-    private void arrangeGamersShips() {
-        for (Ship ship : game.getPlayer1().getFleet().values()) {
-            for (Cell cell : ship.getBody()) {
-                cellsOfGamer[cell.getX()][cell.getY()].setBackground(Color.black);
-            }
-        }
-    }
-
-    private void arrangeComputerShips() {
-        for (Ship ship : game.getPlayer2().getFleet().values()) {
-            for (Cell cell : ship.getBody()) {
-                cellsOfComputer[cell.getX()][cell.getY()].setBackground(Color.black);
-            }
-        }
-    }
-
     private void paintAllComputerCells() {
         for (int y = 1; y < cellsOfComputer.length; y++) {
             JButton[] jButtons = cellsOfComputer[y];
@@ -174,22 +164,33 @@ public class View extends JFrame {
         }
     }
 
-    private void reviewFields() {
-        Cell[][] field1 = game.getPlayer1().getField();
-        Cell[][] field2 = game.getPlayer2().getField();
+    private void reviewFieldsOfGamer() {
         for (int y = 1; y <= ConfigOfGame.get().height(); y++) {
             for (int x = 1; x <= ConfigOfGame.get().width(); x++) {
                 cellsOfGamer[x][y].setBackground(
-                        setColorByStatusOfCell(field1[x][y].getStatus())
-                );
-                cellsOfComputer[x][y].setBackground(
-                        setColorByStatusOfCell(field2[x][y].getStatus())
+                        setColorByStatusOfCell(game.getPlayer1().getField()[x][y].getStatus())
                 );
             }
         }
     }
 
-    private Color setColorByStatusOfCell(Cell.Status status) {      // функция сопоставления статусов и цветов
+    private void reviewFieldsOfComputer() {
+        for (int y = 1; y <= ConfigOfGame.get().height(); y++) {
+            for (int x = 1; x <= ConfigOfGame.get().width(); x++) {
+                Status status = game.getPlayer2().getField()[x][y].getStatus();
+                cellsOfComputer[x][y].setBackground(setColorByStatusOfCell(status));
+                if (showComputerShips.isSelected()) {   // отображаем все поля, если такая настройка выбрана
+                    cellsOfComputer[x][y].setBackground(setColorByStatusOfCell(status));
+                } else {
+                    if (status != Status.DECK) {       // в противном случае всё кроме неподбитых палуб
+                        cellsOfComputer[x][y].setBackground(setColorByStatusOfCell(status));
+                    }
+                }
+            }
+        }
+    }
+
+    private Color setColorByStatusOfCell(Status status) {      // функция сопоставления статусов и цветов
         switch (status) {
             case WATER:
                 return Color.blue;
@@ -207,8 +208,19 @@ public class View extends JFrame {
         return null;
     }
 
+    /**
+     * На выбранной ячейке меняет цвет в зависимости от нового статуса. Если корабль подбит -
+     * закрашивает все его палубы.
+     * */
     private void makeFire(int x, int y) {
-        // на выбранной ячейке меняет цвет в зависимости от нового статуса
-        cellsOfComputer[x][y].setBackground(setColorByStatusOfCell(game.getPlayer2().getFire(x, y)));
+
+        Status typeOfFiredArea = game.getPlayer2().getFire(x, y);
+        if (typeOfFiredArea == Status.DAMAGED_SHIP) {
+            Set<Cell> deadBody = game.getPlayer2().getShipByCoordinates(x, y).getBody();
+            for (Cell cell : deadBody) {
+                cellsOfComputer[cell.getX()][cell.getY()].setBackground(setColorByStatusOfCell(cell.getStatus()));
+            }
+        }
+        cellsOfComputer[x][y].setBackground(setColorByStatusOfCell(typeOfFiredArea));
     }
 }

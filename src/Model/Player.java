@@ -76,11 +76,13 @@ public class Player {
     }
 
     public Cell.Status getFire(int x, int y) {
-        switch (this.field[x][y].getStatus()) {
+        Cell.Status status = this.field[x][y].getStatus();
+        switch (status) {
             case DECK:
                 this.field[x][y].setStatus(Cell.Status.DAMAGED_DECK);
-                Ship injuredShip = this.getShipByCell(x, y);  // получаем поражённый корабль
+                Ship injuredShip = this.getShipByCoordinates(x, y);  // получаем поражённый корабль
                 if (injuredShip.getDamage(x, y) == Ship.isAlive.DEAD) {
+                    System.out.print(injuredShip.getName() + " утонул.");
                     //this.fleet.remove(injuredShip.getName());
                 }
                 break;
@@ -94,7 +96,13 @@ public class Player {
         return this.field[x][y].getStatus();
     }
 
-    private Ship getShipByCell(int x, int y) {
+    public List<Cell> getAllDecksOfDeadShip(int x, int y) {    // возвращает палубы для отображения только что потопленного корабля
+        List<Cell> allDeadDecks = new ArrayList<Cell>();
+
+        return allDeadDecks;
+    }
+
+    public Ship getShipByCoordinates(int x, int y) {
         for (Ship ship : fleet.values()) {
             if (null != ship.getCellByCoordinates(x, y)) return ship;
         }
