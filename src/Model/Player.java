@@ -125,7 +125,7 @@ public class Player {
     private int checkAmountOfShips() {  // для проверки, в игре ли ещё этот игрок
         int amountOfShips = 0;
         for (Ship ship : fleet.values()) {
-            if (ship.getStatus() == Ship.isAlive.ALIVE) amountOfShips++;
+            if (ship.getStatus() != Ship.isAlive.DEAD) amountOfShips++;
         }
         return amountOfShips;
     }
