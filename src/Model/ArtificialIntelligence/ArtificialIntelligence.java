@@ -8,6 +8,7 @@ import java.util.List;
 
 public class ArtificialIntelligence {
     private static ArtificialIntelligence gameBrain;        // попытка реализовать синглтон
+    // коллекция всех возможных вариантов установки; много дополняется, поэтому LinkedList
     private List<VariantOfPosition> allPossibleVariantsOfPosition = new LinkedList<VariantOfPosition>();
 
     /**
@@ -19,9 +20,16 @@ public class ArtificialIntelligence {
         return gameBrain;
     }
 
+    /**
+     * При вызове метода поле возможных вариантов очищается и вновь наполняется исчерпывающим количеством
+     * всех возможных вариантов исходя из текущей диспозиции.
+     * Пробегает по всем ячейкам поля. Если из текущей ячейки возможно отложить корабль заданной длины,
+     * проверяет каждую ячейку, которую он будет занимать. При обнаружении занятой ячейки данный вариант
+     * считается негодным и в итоговый массив не идёт.
+     */
     private void setAllPossibleVariantsOfPosition(int length, Cell[][] field) {
         this.allPossibleVariantsOfPosition.clear();
-        boolean isVariantSuitable = true;
+        boolean isVariantSuitable = true;   // меняется, как только проверка варианта выявляет, что он неприемлем
 
         for (int y = 1; y <= ConfigOfGame.get().height(); y++) {
             for (int x = 1; x <= ConfigOfGame.get().width(); x++) {
@@ -44,9 +52,16 @@ public class ArtificialIntelligence {
         }
     }
 
+    /**
+     * Выбирает один случайный вариант из доступных.
+     */
     public VariantOfPosition getOneVariant(int length, Cell[][] field) {
         this.setAllPossibleVariantsOfPosition(length, field);
         int key = (int) Math.round(Math.random() * (this.allPossibleVariantsOfPosition.size() - 1));
         return this.allPossibleVariantsOfPosition.get(key);
+    }
+
+    private void setAllVariantsOfShot() {
+
     }
 }

@@ -18,6 +18,7 @@ public class View extends JFrame {
 
     private Game game;  // пока игру будем хранить в этом классе в этом поле
 
+    // меню
     private JMenuBar menuBar = new JMenuBar();
     private JMenu menuGame = new JMenu("Игра");
     private JMenu menuAbout = new JMenu("Справка");
@@ -33,7 +34,9 @@ public class View extends JFrame {
     private JLabel currentInformation = new JLabel("Здесь будет ценная информация");
     private JToggleButton showComputerShips = new JToggleButton("Показать/скрыть корабли компьютера");
 
-    private JButton[][] cellsOfGamer;       // массивы кнопок для отображения поля
+
+    // массивы кнопок для отображения поля
+    private JButton[][] cellsOfGamer;
     private JButton[][] cellsOfComputer;
 
     private char[] numberToLetter;
