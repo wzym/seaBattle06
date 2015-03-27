@@ -1,8 +1,7 @@
 package Model;
 
 /**
- * Из ячеек будет состоять игровое поле. Это карта-посредник между положением дел игрока, состоянием его флота
- * и вьюшкой, а также отображением повреждённых кораблей и полей для противника.
+ * Из ячеек будет состоять игровое поле и корабли
  */
 public class Cell {
     private Status status;
@@ -13,11 +12,11 @@ public class Cell {
         DECK, WATER, BUFFER, DAMAGED_DECK, DAMAGED_SHIP, DAMAGED_WATER
     }
 
-    public Cell(int x, int y, Status status) {
+    public Cell(int x, int y, Status status) {       // конструктор
         this.x = x;
         this.y = y;
         this.setStatus(status);
-    }       // конструктор
+    }
 
     public Status getStatus() {
         return status;

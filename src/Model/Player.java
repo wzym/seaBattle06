@@ -1,5 +1,9 @@
 package Model;
-
+/**
+ * Игрок имеет своё игровое поле - двумерный массив - [x][y] - ячеек и ассоциативную коллекцию
+ * кораблей - ключ->значение. А также статус, который при поражении всех палуб всех кораблей
+ * становится false - isPlayerInGame.
+ */
 import java.util.*;
 import Model.ArtificialIntelligence.ArtificialIntelligence;
 import Model.ArtificialIntelligence.VariantOfPosition;
@@ -9,19 +13,26 @@ public class Player {
     private HashMap<String, Ship> fleet;
     private boolean isPlayerInGame;
 
-    {
+    {   // инициализуем массив поля и коллекцию кораблей; габариты поля - из конфигурации
         this.field = new Cell[ConfigOfGame.get().width() + 2]
                 [ConfigOfGame.get().height() + 2]; // +2 - для установки буфера по периметру
         this.fleet = new HashMap<String, Ship>();
         this.isPlayerInGame = true;
     }
 
+    /**
+     * При создании игрока инициализуем все ячейки поля, заливаем их водой.
+     * Затем автоматически заполняем их кораблями.
+     */
     public Player() {
         this.setWaterAndBuffer();
         this.setShipsAutomatically();
-
     }
 
+    /**
+     * Каждый корабль имеет вокрук себя буфер. В первую очередь служит для формирования
+     * корректных вариантов расстановки. Кроме того буфер обрамляет игровое поле.
+     */
     private void setWaterAndBuffer() {
         for (int i = 1; i <= ConfigOfGame.get().height(); i++) {    // инициализация поля, устанавливаем ячейки с водой
             for (int j = 1; j <= ConfigOfGame.get().width(); j++) {
@@ -40,6 +51,11 @@ public class Player {
         }
     }
 
+    /**
+     * Перебираем конфигурацию кораблей, для каждого (по мере убывания палуб) формируем исчерпывающую
+     * коллекцию вариантов расстановки, выбираем случайный вариант, и в соответствии с ним
+     * выставляем корабль на поле
+     */
     private void setShipsAutomatically() {
         for (int[] configOfShip : ConfigOfGame.get().configOfShips()) {
             for (int i = 0; i < configOfShip[1]; i++) {
@@ -51,6 +67,10 @@ public class Player {
         }
     }
 
+    /**
+     * Выставляем корабль на поле, сохраняем соответствующим ячейкам статус палубы и добавляем их в
+     * тело кораблся (ship.body). Отмечаем буфер вокруг кораблся.
+     */
     private void setOneShip(String name, int xOfHead, int yOfHead, int length, boolean isHorizontal) {
         this.fleet.put(name, new Ship(name, length));               // добавляем именованный корабль во флот
         for (int i = 0; i < length; i++) {
@@ -77,6 +97,11 @@ public class Player {
         }
     }
 
+    /**
+     * Когда совершается выстрел по полю игрока, в зависимости от статуса ячейки, в которую попали,
+     * меняется её статус. Если попадание в корабль - запускаем у этого корабля соответствующий метод.
+     * Если корабль мёртв - проверяем, остались ли ещё корабли.
+     */
     public Cell.Status getFire(int x, int y) {
         Cell.Status status = this.field[x][y].getStatus();
         switch (status) {
@@ -97,7 +122,7 @@ public class Player {
         return this.field[x][y].getStatus();
     }
 
-    private int checkAmountOfShips() {
+    private int checkAmountOfShips() {  // для проверки, в игре ли ещё этот игрок
         int amountOfShips = 0;
         for (Ship ship : fleet.values()) {
             if (ship.getStatus() == Ship.isAlive.ALIVE) amountOfShips++;
@@ -105,6 +130,10 @@ public class Player {
         return amountOfShips;
     }
 
+    /**
+     * Пробегаем по всему флоту, в каждом корабле вызываем метод поиска палубы по координатам.
+     * Если таковая есть - возвращаем корабль.
+     */
     public Ship getShipByCoordinates(int x, int y) {
         for (Ship ship : fleet.values()) {
             if (null != ship.getCellByCoordinates(x, y)) return ship;

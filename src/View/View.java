@@ -57,7 +57,6 @@ public class View extends JFrame {
                     game = new Game();
                     reviewFieldsOfGamer();
                     if (showComputerShips.isSelected()) reviewFieldsOfComputer();
-                } else {
                 }
             }
         });

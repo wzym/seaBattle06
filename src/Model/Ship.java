@@ -1,5 +1,8 @@
 package Model;
 
+/**
+ * Корабль состоит из тех же ячеек, что и поле игры. Каждая
+ */
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,7 +12,7 @@ public class Ship {
     private Set<Cell> body = new HashSet<Cell>();     // корабль - это коллекция палуб-ячеек
     private int health;
 
-    public enum isAlive {       // статус касается состояния палубы и состояния корабля и палубы
+    public enum isAlive {       // статус касается состояния корабля
         ALIVE, INJURED, DEAD
     }
 
@@ -19,6 +22,12 @@ public class Ship {
         this.status = isAlive.ALIVE;        // статус корабля - жив
     }
 
+    /**
+     * Возвращает по координатам ячейку, входящую в состав корабля. Если таковой нет - null.
+     * @param x
+     * @param y
+     * @return
+     */
     public Cell getCellByCoordinates(int x, int y) {
         for (Cell deck : body) {
             if (deck.getX() == x && deck.getY() ==  y) return deck;
@@ -26,6 +35,13 @@ public class Ship {
         return null;
     }
 
+    /**
+     * При получении повреждения уменьшается здоровье, при достижении ноля статус меняется на DEAD.
+     * Соответственно выставляется статус ячеек-палуб корабля.
+     * @param x
+     * @param y
+     * @return
+     */
     public isAlive getDamage(int x, int y) {
         Cell deck = getCellByCoordinates(x, y);
         this.health--;
