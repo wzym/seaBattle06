@@ -4,6 +4,7 @@ import Controller.Game;
 import Model.Cell;
 import Model.Cell.Status;
 import Model.ConfigOfGame;
+import Model.Ship;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,6 +31,7 @@ public class View extends JFrame {
     private JPanel fieldOfComputer =
             new JPanel(new GridLayout(ConfigOfGame.get().width() + 1, ConfigOfGame.get().height() + 1));
     private JPanel controller = new JPanel();
+    private JLabel currentInformation = new JLabel("Здесь будет ценная информация");
     private JToggleButton showComputerShips = new JToggleButton("Показать/скрыть корабли компьютера");
 
     private JButton[][] cellsOfGamer;       // массивы кнопок для отображения поля
@@ -84,6 +86,7 @@ public class View extends JFrame {
         bothFields.setLayout(null);                 // не используем композиционную разметку, расположение - вручную
         bothFields.add(fieldOfGamer);
         bothFields.add(fieldOfComputer);
+        controller.add(currentInformation);
         controller.add(showComputerShips);
 
         numberToLetter = new char[]      // массив для вывода координаты "x" в буквенном кириллическом виде
@@ -136,8 +139,9 @@ public class View extends JFrame {
                     public void actionPerformed(ActionEvent e) {
                         if (game != null) {     // Нажатие на кнопки вызывает действие только после запуска игры
                             makeFire(finalX, finalY);
+                        } else {
+                            currentInformation.setText("Не кликай, игра ещё не запущена. Меню -> Игра -> Запустить игру");
                         }
-                        else System.out.println("Игра не запущена");
                     }
                 });
 
@@ -213,14 +217,31 @@ public class View extends JFrame {
      * закрашивает все его палубы.
      * */
     private void makeFire(int x, int y) {
-
         Status typeOfFiredArea = game.getPlayer2().getFire(x, y);
-        if (typeOfFiredArea == Status.DAMAGED_SHIP) {
-            Set<Cell> deadBody = game.getPlayer2().getShipByCoordinates(x, y).getBody();
-            for (Cell cell : deadBody) {
-                cellsOfComputer[cell.getX()][cell.getY()].setBackground(setColorByStatusOfCell(cell.getStatus()));
-            }
+        switch (typeOfFiredArea) {
+            case DECK:
+                break;
+            case WATER:
+                break;
+            case BUFFER:
+                break;
+            case DAMAGED_DECK:
+                Ship injuredShip = game.getPlayer2().getShipByCoordinates(x, y);
+                currentInformation.setText(injuredShip.getName() + " повреждён.");
+                break;
+            case DAMAGED_SHIP:
+                Ship deadShip = game.getPlayer2().getShipByCoordinates(x, y);
+                currentInformation.setText(deadShip.getName() + " утонул.");
+                for (Cell cell : deadShip.getBody()) {
+                    cellsOfComputer[cell.getX()][cell.getY()].setBackground(setColorByStatusOfCell(cell.getStatus()));
+                }
+                if (!game.getPlayer2().isPlayerInGame()) currentInformation.setText("Кораблей больше нет.");
+                break;
+
+            case DAMAGED_WATER:
+                break;
         }
+        // закрашиваем ячейку в соответствующий цвет
         cellsOfComputer[x][y].setBackground(setColorByStatusOfCell(typeOfFiredArea));
     }
 }

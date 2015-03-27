@@ -7,11 +7,13 @@ import Model.ArtificialIntelligence.VariantOfPosition;
 public class Player {
     private Cell[][] field;
     private HashMap<String, Ship> fleet;
+    private boolean isPlayerInGame;
 
     {
         this.field = new Cell[ConfigOfGame.get().width() + 2]
                 [ConfigOfGame.get().height() + 2]; // +2 - для установки буфера по периметру
         this.fleet = new HashMap<String, Ship>();
+        this.isPlayerInGame = true;
     }
 
     public Player() {
@@ -82,8 +84,7 @@ public class Player {
                 this.field[x][y].setStatus(Cell.Status.DAMAGED_DECK);
                 Ship injuredShip = this.getShipByCoordinates(x, y);  // получаем поражённый корабль
                 if (injuredShip.getDamage(x, y) == Ship.isAlive.DEAD) {
-                    System.out.print(injuredShip.getName() + " утонул.");
-                    //this.fleet.remove(injuredShip.getName());
+                    if (checkAmountOfShips() == 0) this.isPlayerInGame = false;
                 }
                 break;
             case WATER:
@@ -96,10 +97,12 @@ public class Player {
         return this.field[x][y].getStatus();
     }
 
-    public List<Cell> getAllDecksOfDeadShip(int x, int y) {    // возвращает палубы для отображения только что потопленного корабля
-        List<Cell> allDeadDecks = new ArrayList<Cell>();
-
-        return allDeadDecks;
+    private int checkAmountOfShips() {
+        int amountOfShips = 0;
+        for (Ship ship : fleet.values()) {
+            if (ship.getStatus() == Ship.isAlive.ALIVE) amountOfShips++;
+        }
+        return amountOfShips;
     }
 
     public Ship getShipByCoordinates(int x, int y) {
@@ -109,11 +112,11 @@ public class Player {
         return null;
     }
 
-    public Map<String, Ship> getFleet() {
-        return fleet;
-    }
-
     public Cell[][] getField() {
         return field;
+    }
+
+    public boolean isPlayerInGame() {
+        return isPlayerInGame;
     }
 }
