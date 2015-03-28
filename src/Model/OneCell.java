@@ -3,7 +3,7 @@ package Model;
 /**
  * Из ячеек будет состоять игровое поле и корабли
  */
-public class Cell {
+public class OneCell {
     private Status status;
     private int x;
     private int y;
@@ -12,7 +12,7 @@ public class Cell {
         DECK, WATER, BUFFER, DAMAGED_DECK, DAMAGED_SHIP, DAMAGED_WATER
     }
 
-    public Cell(int x, int y, Status status) {       // конструктор
+    public OneCell(int x, int y, Status status) {       // конструктор
         this.x = x;
         this.y = y;
         this.setStatus(status);

@@ -9,12 +9,12 @@ import Model.ArtificialIntelligence.ArtificialIntelligence;
 import Model.ArtificialIntelligence.VariantOfPosition;
 
 public class Player {
-    private Cell[][] field;
+    private OneCell[][] field;
     private HashMap<String, Ship> fleet;
     private boolean isPlayerInGame;
 
     {   // инициализуем массив поля и коллекцию кораблей; габариты поля - из конфигурации
-        this.field = new Cell[ConfigOfGame.get().width() + 2]
+        this.field = new OneCell[ConfigOfGame.get().width() + 2]
                 [ConfigOfGame.get().height() + 2]; // +2 - для установки буфера по периметру
         this.fleet = new HashMap<String, Ship>();
         this.isPlayerInGame = true;
@@ -36,18 +36,18 @@ public class Player {
     private void setWaterAndBuffer() {
         for (int i = 1; i <= ConfigOfGame.get().height(); i++) {    // инициализация поля, устанавливаем ячейки с водой
             for (int j = 1; j <= ConfigOfGame.get().width(); j++) {
-                this.field[j][i] = new Cell(j, i, Cell.Status.WATER);
+                this.field[j][i] = new OneCell(j, i, OneCell.Status.WATER);
             }
         }
         for (int i = 0; i < ConfigOfGame.get().height() + 2; i++) {
-            this.field[0][i] = new Cell(0, i, Cell.Status.BUFFER);     // устанавливаем левый буфер
+            this.field[0][i] = new OneCell(0, i, OneCell.Status.BUFFER);     // устанавливаем левый буфер
             this.field[ConfigOfGame.get().width() + 1][i] =
-                    new Cell(ConfigOfGame.get().width() + 1, i, Cell.Status.BUFFER);         // правый
+                    new OneCell(ConfigOfGame.get().width() + 1, i, OneCell.Status.BUFFER);         // правый
         }
         for (int i = 0; i < ConfigOfGame.get().width() + 2; i++) {
-            this.field[i][0] = new Cell(i, 0, Cell.Status.BUFFER);     // верхний буфер
+            this.field[i][0] = new OneCell(i, 0, OneCell.Status.BUFFER);     // верхний буфер
             this.field[i][ConfigOfGame.get().height() + 1] =
-                    new Cell(i, ConfigOfGame.get().height() + 1, Cell.Status.BUFFER);     // нижний
+                    new OneCell(i, ConfigOfGame.get().height() + 1, OneCell.Status.BUFFER);     // нижний
         }
     }
 
@@ -74,26 +74,26 @@ public class Player {
     private void setOneShip(String name, int xOfHead, int yOfHead, int length, boolean isHorizontal) {
         this.fleet.put(name, new Ship(name, length));               // добавляем именованный корабль во флот
         for (int i = 0; i < length; i++) {
-            this.field[xOfHead][yOfHead].setStatus(Cell.Status.DECK);       // отмечает на поле тело корабля
+            this.field[xOfHead][yOfHead].setStatus(OneCell.Status.DECK);       // отмечает на поле тело корабля
             this.fleet.get(name).getBody().add(field[xOfHead][yOfHead]);    // сохраняем эти ячейки в массив как палубы
             if (isHorizontal) { ++xOfHead; }
             else { ++yOfHead; }
         }
         if (isHorizontal) {
             for (int i = 0; i < length + 2; i++) {
-                this.field[xOfHead - i][yOfHead - 1].setStatus(Cell.Status.BUFFER); // буфер сверху
-                this.field[xOfHead - i][yOfHead + 1].setStatus(Cell.Status.BUFFER); // буфер снизу
+                this.field[xOfHead - i][yOfHead - 1].setStatus(OneCell.Status.BUFFER); // буфер сверху
+                this.field[xOfHead - i][yOfHead + 1].setStatus(OneCell.Status.BUFFER); // буфер снизу
             }
-            this.field[xOfHead - 1 - length][yOfHead].setStatus(Cell.Status.BUFFER);    // буфер перед головой
-            this.field[xOfHead][yOfHead].setStatus(Cell.Status.BUFFER);                 // буфер в хвосте
+            this.field[xOfHead - 1 - length][yOfHead].setStatus(OneCell.Status.BUFFER);    // буфер перед головой
+            this.field[xOfHead][yOfHead].setStatus(OneCell.Status.BUFFER);                 // буфер в хвосте
         }
         else {
             for (int i = 0; i < length + 2; i++) {
-                this.field[xOfHead - 1][yOfHead - i].setStatus(Cell.Status.BUFFER);     // буфер слева
-                this.field[xOfHead + 1][yOfHead - i].setStatus(Cell.Status.BUFFER);     // справа
+                this.field[xOfHead - 1][yOfHead - i].setStatus(OneCell.Status.BUFFER);     // буфер слева
+                this.field[xOfHead + 1][yOfHead - i].setStatus(OneCell.Status.BUFFER);     // справа
             }
-            this.field[xOfHead][yOfHead - length - 1].setStatus(Cell.Status.BUFFER);    // выше головы
-            this.field[xOfHead][yOfHead].setStatus(Cell.Status.BUFFER);                 // ниже хвоста
+            this.field[xOfHead][yOfHead - length - 1].setStatus(OneCell.Status.BUFFER);    // выше головы
+            this.field[xOfHead][yOfHead].setStatus(OneCell.Status.BUFFER);                 // ниже хвоста
         }
     }
 
@@ -102,21 +102,21 @@ public class Player {
      * меняется её статус. Если попадание в корабль - запускаем у этого корабля соответствующий метод.
      * Если корабль мёртв - проверяем, остались ли ещё корабли.
      */
-    public Cell.Status getFire(int x, int y) {
-        Cell.Status status = this.field[x][y].getStatus();
+    public OneCell.Status getFire(int x, int y) {
+        OneCell.Status status = this.field[x][y].getStatus();
         switch (status) {
             case DECK:
-                this.field[x][y].setStatus(Cell.Status.DAMAGED_DECK);
+                this.field[x][y].setStatus(OneCell.Status.DAMAGED_DECK);
                 Ship injuredShip = this.getShipByCoordinates(x, y);  // получаем поражённый корабль
                 if (injuredShip.getDamage(x, y) == Ship.isAlive.DEAD) {
                     if (checkAmountOfShips() == 0) this.isPlayerInGame = false;
                 }
                 break;
             case WATER:
-                this.field[x][y].setStatus(Cell.Status.DAMAGED_WATER);
+                this.field[x][y].setStatus(OneCell.Status.DAMAGED_WATER);
                 break;
             case BUFFER:
-                this.field[x][y].setStatus(Cell.Status.DAMAGED_WATER);
+                this.field[x][y].setStatus(OneCell.Status.DAMAGED_WATER);
                 break;
         }
         return this.field[x][y].getStatus();
@@ -130,6 +130,10 @@ public class Player {
         return amountOfShips;
     }
 
+    public void makeFire() {
+        ArtificialIntelligence.getGameBrain().getOneVariantOfShot();
+    }
+
     /**
      * Пробегаем по всему флоту, в каждом корабле вызываем метод поиска палубы по координатам.
      * Если таковая есть - возвращаем корабль.
@@ -141,7 +145,7 @@ public class Player {
         return null;
     }
 
-    public Cell[][] getField() {
+    public OneCell[][] getField() {
         return field;
     }
 

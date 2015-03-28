@@ -9,7 +9,7 @@ import java.util.Set;
 public class Ship {
     private String name;
     private isAlive status;
-    private Set<Cell> body = new HashSet<Cell>();     // корабль - это коллекция палуб-ячеек
+    private Set<OneCell> body = new HashSet<OneCell>();     // корабль - это коллекция палуб-ячеек
     private int health;
 
     public enum isAlive {       // статус касается состояния корабля
@@ -28,8 +28,8 @@ public class Ship {
      * @param y
      * @return
      */
-    public Cell getCellByCoordinates(int x, int y) {
-        for (Cell deck : body) {
+    public OneCell getCellByCoordinates(int x, int y) {
+        for (OneCell deck : body) {
             if (deck.getX() == x && deck.getY() ==  y) return deck;
         }
         return null;
@@ -43,22 +43,22 @@ public class Ship {
      * @return
      */
     public isAlive getDamage(int x, int y) {
-        Cell deck = getCellByCoordinates(x, y);
+        OneCell deck = getCellByCoordinates(x, y);
         this.health--;
         this.health = (this.health < 0) ? (0) : this.health;
         if (this.health > 0) {
             this.status = isAlive.INJURED;
-            deck.setStatus(Cell.Status.DAMAGED_DECK);
+            deck.setStatus(OneCell.Status.DAMAGED_DECK);
         } else {
             this.status = isAlive.DEAD;
-            for (Cell deadDeck : body) {
-                deadDeck.setStatus(Cell.Status.DAMAGED_SHIP);
+            for (OneCell deadDeck : body) {
+                deadDeck.setStatus(OneCell.Status.DAMAGED_SHIP);
             }
         }
         return this.status;
     }
 
-    public Set<Cell> getBody() {
+    public Set<OneCell> getBody() {
         return body;
     }
 

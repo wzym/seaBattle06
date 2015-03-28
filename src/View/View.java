@@ -1,8 +1,8 @@
 package View;
 
 import Controller.Game;
-import Model.Cell;
-import Model.Cell.Status;
+import Model.OneCell;
+import Model.OneCell.Status;
 import Model.ConfigOfGame;
 import Model.Ship;
 
@@ -237,7 +237,7 @@ public class View extends JFrame {
             case DAMAGED_SHIP:
                 Ship deadShip = game.getPlayer2().getShipByCoordinates(x, y);
                 currentInformation.setText(deadShip.getName() + " утонул.");
-                for (Cell cell : deadShip.getBody()) {
+                for (OneCell cell : deadShip.getBody()) {
                     cellsOfComputer[cell.getX()][cell.getY()].setBackground(setColorByStatusOfCell(cell.getStatus()));
                 }
                 if (!game.getPlayer2().isPlayerInGame()) currentInformation.setText("Кораблей больше нет.");
