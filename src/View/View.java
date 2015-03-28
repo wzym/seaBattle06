@@ -135,6 +135,7 @@ public class View extends JFrame {
             for (int x = 1; x <= ConfigOfGame.get().width(); x++) {
                 cellsOfGamer[x][y] = new JButton();
                 cellsOfComputer[x][y] = new JButton();
+                cellsOfGamer[x][y].setEnabled(false);   // ячейки игрока не будут нажимаемы
 
                 final int finalX = x;
                 final int finalY = y;
