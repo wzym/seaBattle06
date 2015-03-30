@@ -7,7 +7,6 @@ import Model.OneCell.Status;
 import Model.ConfigOfGame;
 
 import javax.swing.*;
-import javax.swing.plaf.InsetsUIResource;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,7 +14,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 public class View extends JFrame {
-    public Turn lastTurn;
     private JFrame frame = new JFrame("Морской бой 0.6");
 
     // меню
