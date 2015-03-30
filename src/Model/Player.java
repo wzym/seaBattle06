@@ -152,4 +152,8 @@ public class Player {
     public boolean isPlayerInGame() {
         return isPlayerInGame;
     }
+
+    public HashMap<String, Ship> getFleet() {
+        return fleet;
+    }
 }

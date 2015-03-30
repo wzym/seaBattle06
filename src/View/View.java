@@ -1,12 +1,13 @@
 package View;
 
+import Controller.EventOfViewAndController;
 import Controller.Game;
-import Model.OneCell;
+import Controller.Turn;
 import Model.OneCell.Status;
 import Model.ConfigOfGame;
-import Model.Ship;
 
 import javax.swing.*;
+import javax.swing.plaf.InsetsUIResource;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,9 +15,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 public class View extends JFrame {
+    public Turn lastTurn;
     private JFrame frame = new JFrame("Морской бой 0.6");
-
-    private Game game;  // пока игру будем хранить в этом классе в этом поле
 
     // меню
     private JMenuBar menuBar = new JMenuBar();
@@ -37,7 +37,7 @@ public class View extends JFrame {
 
     // массивы кнопок для отображения поля
     private JButton[][] cellsOfGamer;
-    private JButton[][] cellsOfComputer;
+    public JButton[][] cellsOfComputer;
 
     private char[] numberToLetter;
 
@@ -46,36 +46,6 @@ public class View extends JFrame {
         frame.setLayout(new BorderLayout());    // композиция окна
         frame.setSize(1080, 810);               // размеры окна
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);  // закрываем приложении при закрытии окна
-
-        menuItemExit.addActionListener(new ActionListener() {       // вешаем слушатели на менюшки
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
-        menuItemRestart.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (null == game) {
-                    game = new Game();
-                    reviewFieldsOfGamer();
-                    if (showComputerShips.isSelected()) reviewFieldsOfComputer();
-                }
-            }
-        });
-        showComputerShips.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (game != null) {
-                    if (showComputerShips.isSelected()) {
-                        reviewFieldsOfGamer();
-                        reviewFieldsOfComputer();
-                    } else {
-                        paintAllComputerCells();
-                    }
-                }
-            }
-        });
 
         menuGame.add(menuItemRestart);      // формируем панель меню
         menuGame.add(menuItemExit);
@@ -100,19 +70,51 @@ public class View extends JFrame {
         cellsOfGamer = new JButton[ConfigOfGame.get().height() + 1][ConfigOfGame.get().width() + 1];
         cellsOfComputer = new JButton[ConfigOfGame.get().height() + 1][ConfigOfGame.get().width() + 1];
 
-        initializationOfFields();
-
         frame.add(bothFields, BorderLayout.CENTER); // добавляем контейнер с двумя игровыми полями
         frame.add(controller, BorderLayout.SOUTH);
 
+
+    }
+
+    public View(Game game) {
+        addActionsToMenu(game);
+        initializationOfFields(game);   // инициализируем ячейки
         frame.setVisible(true);         // отображаем окно
     }
 
-    public View() {
+    private void addActionsToMenu(final Game game) {
+        menuItemExit.addActionListener(new ActionListener() {       // вешаем слушатели на менюшки
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+        menuItemRestart.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                game.listener(new EventOfViewAndController(EventOfViewAndController.KindOfEvent.START));
+                if (showComputerShips.isSelected()) {
+                    game.listener(new EventOfViewAndController(EventOfViewAndController.KindOfEvent.SHOW_COMP));
+                }
+            }
+        });
+        showComputerShips.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (showComputerShips.isSelected()) {
+                    game.listener(new EventOfViewAndController(EventOfViewAndController.KindOfEvent.SHOW_COMP));
+                } else {
+                    paintAllComputerCells();
+                }
 
+            }
+        });
     }
 
-    private void initializationOfFields() {
+    /**
+     * Вызывается при запуске окна для инициализации всех кнопок-ячеек
+     */
+    private void initializationOfFields(final Game game) {
         cellsOfGamer[0][0] = new JButton();     // объявляем угловые неиспользуемые ячейки
         cellsOfGamer[0][0].setEnabled(false);
         cellsOfComputer[0][0] = new JButton();
@@ -142,11 +144,7 @@ public class View extends JFrame {
                 cellsOfComputer[x][y].addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        if (game != null) {     // Нажатие на кнопки вызывает действие только после запуска игры
-                            makeFire(finalX, finalY);
-                        } else {
-                            currentInformation.setText("Не кликай, игра ещё не запущена. Меню -> Игра -> Запустить игру");
-                        }
+                        game.listener(new Turn(finalX, finalY));
                     }
                 });
 
@@ -163,6 +161,9 @@ public class View extends JFrame {
         }
     }
 
+    /**
+     * Используется вместе с кнопкой, отображающей/ прячущей корабли компьютера.
+     */
     private void paintAllComputerCells() {
         for (int y = 1; y < cellsOfComputer.length; y++) {
             JButton[] jButtons = cellsOfComputer[y];
@@ -173,30 +174,42 @@ public class View extends JFrame {
         }
     }
 
-    private void reviewFieldsOfGamer() {
-        for (int y = 1; y <= ConfigOfGame.get().height(); y++) {
-            for (int x = 1; x <= ConfigOfGame.get().width(); x++) {
-                cellsOfGamer[x][y].setBackground(
-                        setColorByStatusOfCell(game.getPlayer1().getField()[x][y].getStatus())
-                );
-            }
-        }
+    public void paintCellByStatus(int x, int y, Status status) {
+        cellsOfGamer[x][y].setBackground(setColorByStatusOfCell(status));
     }
 
-    private void reviewFieldsOfComputer() {
-        for (int y = 1; y <= ConfigOfGame.get().height(); y++) {
-            for (int x = 1; x <= ConfigOfGame.get().width(); x++) {
-                Status status = game.getPlayer2().getField()[x][y].getStatus();
-                cellsOfComputer[x][y].setBackground(setColorByStatusOfCell(status));
-                if (showComputerShips.isSelected()) {   // отображаем все поля, если такая настройка выбрана
-                    cellsOfComputer[x][y].setBackground(setColorByStatusOfCell(status));
-                } else {
-                    if (status != Status.DECK) {       // в противном случае всё кроме неподбитых палуб
-                        cellsOfComputer[x][y].setBackground(setColorByStatusOfCell(status));
-                    }
-                }
-            }
-        }
+    public void paintCompCellByStatus(int x, int y, Status status) {
+        cellsOfComputer[x][y].setBackground(setColorByStatusOfCell(status));
+    }
+
+
+//    private void reviewFieldsOfGamer() {
+//        for (int y = 1; y <= ConfigOfGame.get().height(); y++) {
+//            for (int x = 1; x <= ConfigOfGame.get().width(); x++) {
+//                cellsOfGamer[x][y].setBackground(
+//                        setColorByStatusOfCell(game.getPlayer1().getField()[x][y].getStatus())
+//                );
+//            }
+//        }
+//    }
+
+//    private void reviewFieldsOfComputer() {
+//        for (int y = 1; y <= ConfigOfGame.get().height(); y++) {
+//            for (int x = 1; x <= ConfigOfGame.get().width(); x++) {
+//                Status status = game.getPlayer2().getField()[x][y].getStatus();
+//                cellsOfComputer[x][y].setBackground(setColorByStatusOfCell(status));
+//                if (showComputerShips.isSelected()) {   // отображаем все поля, если такая настройка выбрана
+//                    cellsOfComputer[x][y].setBackground(setColorByStatusOfCell(status));
+//                } else {
+//                    if (status != Status.DECK) {       // в противном случае всё кроме неподбитых палуб
+//                        cellsOfComputer[x][y].setBackground(setColorByStatusOfCell(status));
+//                    }
+//                }
+//            }
+//        }
+//    }
+    public void showMessage(String text) {
+        currentInformation.setText(text);
     }
 
     private Color setColorByStatusOfCell(Status status) {      // функция сопоставления статусов и цветов
@@ -215,38 +228,5 @@ public class View extends JFrame {
                 return Color.gray;
         }
         return null;
-    }
-
-    /**
-     * На выбранной ячейке меняет цвет в зависимости от нового статуса. Если корабль подбит -
-     * закрашивает все его палубы.
-     * */
-    private void makeFire(int x, int y) {
-        Status typeOfFiredArea = game.getPlayer2().getFire(x, y);
-        switch (typeOfFiredArea) {
-            case DECK:
-                break;
-            case WATER:
-                break;
-            case BUFFER:
-                break;
-            case DAMAGED_DECK:
-                Ship injuredShip = game.getPlayer2().getShipByCoordinates(x, y);
-                currentInformation.setText(injuredShip.getName() + " повреждён.");
-                break;
-            case DAMAGED_SHIP:
-                Ship deadShip = game.getPlayer2().getShipByCoordinates(x, y);
-                currentInformation.setText(deadShip.getName() + " утонул.");
-                for (OneCell cell : deadShip.getBody()) {
-                    cellsOfComputer[cell.getX()][cell.getY()].setBackground(setColorByStatusOfCell(cell.getStatus()));
-                }
-                if (!game.getPlayer2().isPlayerInGame()) currentInformation.setText("Кораблей больше нет.");
-                break;
-
-            case DAMAGED_WATER:
-                break;
-        }
-        // закрашиваем ячейку в соответствующий цвет
-        cellsOfComputer[x][y].setBackground(setColorByStatusOfCell(typeOfFiredArea));
     }
 }
