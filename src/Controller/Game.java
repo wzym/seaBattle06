@@ -12,6 +12,15 @@ public class Game {
     private View view = new View(this);
 
     public Game() {
+        while (player1.isPlayerInGame()) {
+            for (int i = 1; i <= 10; i++) {
+                for (int j = 1; j <= 10; j++) {
+                    oneTurn(i,j, false);
+                    Thread.yield();
+                }
+
+            }
+        }
 
     }
 
@@ -33,14 +42,22 @@ public class Game {
                 Ship deadShip = player.getShipByCoordinates(x, y);
                 view.showMessage(deadShip.getName() + " утонул.");
                 for (OneCell deck : deadShip.getBody()) {
-                    view.paintCompCellByStatus(deck.getX(), deck.getY(), deck.getStatus());
+                    if (isItGamersTurn) {
+                        view.paintCompCellByStatus(deck.getX(), deck.getY(), deck.getStatus());
+                    } else {
+                        view.paintCellByStatus(deck.getX(), deck.getY(), deck.getStatus());
+                    }
                 }
                 if (!player.isPlayerInGame()) view.showMessage("Кораблей больше нет.");
                 break;
             case DAMAGED_WATER:
                 break;
         }
-        view.paintCompCellByStatus(x, y, typeOfFiredArea);
+        if (isItGamersTurn) {
+            view.paintCompCellByStatus(x, y, typeOfFiredArea);
+        } else {
+            view.paintCellByStatus(x, y, typeOfFiredArea);
+        }
     }
 
     public void listener(EventOfViewAndController event) {

@@ -180,32 +180,6 @@ public class View extends JFrame {
         cellsOfComputer[x][y].setBackground(setColorByStatusOfCell(status));
     }
 
-
-//    private void reviewFieldsOfGamer() {
-//        for (int y = 1; y <= ConfigOfGame.get().height(); y++) {
-//            for (int x = 1; x <= ConfigOfGame.get().width(); x++) {
-//                cellsOfGamer[x][y].setBackground(
-//                        setColorByStatusOfCell(game.getPlayer1().getField()[x][y].getStatus())
-//                );
-//            }
-//        }
-//    }
-
-//    private void reviewFieldsOfComputer() {
-//        for (int y = 1; y <= ConfigOfGame.get().height(); y++) {
-//            for (int x = 1; x <= ConfigOfGame.get().width(); x++) {
-//                Status status = game.getPlayer2().getField()[x][y].getStatus();
-//                cellsOfComputer[x][y].setBackground(setColorByStatusOfCell(status));
-//                if (showComputerShips.isSelected()) {   // отображаем все поля, если такая настройка выбрана
-//                    cellsOfComputer[x][y].setBackground(setColorByStatusOfCell(status));
-//                } else {
-//                    if (status != Status.DECK) {       // в противном случае всё кроме неподбитых палуб
-//                        cellsOfComputer[x][y].setBackground(setColorByStatusOfCell(status));
-//                    }
-//                }
-//            }
-//        }
-//    }
     public void showMessage(String text) {
         currentInformation.setText(text);
     }
