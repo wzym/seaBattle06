@@ -112,12 +112,41 @@ public class ArtificialIntelligence {
      * При попадании и непотоплении запускаем метод fatality, который обеспечит добивание корабля.
      */
     private void setAllVariantsOfShot() {
+        variantsToShotSecondly.clear();
         int currentLength = getLengthOfLargestShip();
-        List<VariantToShot> variantsToAddInCommonCollection = new SectorToResearch(1, 1, 4, 4, 4).getVariantsToOut();
-        for (VariantToShot variantToShot : variantsToAddInCommonCollection) {
-            variantsToShotSecondly.add(variantToShot);
+        int integerIterationToX = (int) ConfigOfGame.get().width() / currentLength;
+        int remainderIteratorToX = ConfigOfGame.get().width() - integerIterationToX * currentLength;
+        int integerIterationToY = (int) ConfigOfGame.get().height() / currentLength;
+        int remainderIteratorToY = ConfigOfGame.get().height() - integerIterationToY * currentLength;
+
+        for (int y = 0; y < integerIterationToY; y++) {
+            for (int x = 0; x < integerIterationToX; x++) {
+                List<VariantToShot> variantsToAddInCommonCollection = new SectorToResearch(
+                        1 + x * currentLength, 1 + y * currentLength, currentLength, currentLength, currentLength
+                ).getVariantsToOut();
+                for (VariantToShot variantToShot : variantsToAddInCommonCollection) {
+                    variantsToShotSecondly.add(variantToShot);
+                }
+            }
         }
 
+        for (int y = 0; y < integerIterationToY; y++) {     // правая узкая полоска
+            List<VariantToShot> variantsToAddInCommonCollection = new SectorToResearch(
+                    1 + integerIterationToX * currentLength, 1 + y * currentLength,
+                    currentLength, remainderIteratorToX, currentLength).getVariantsToOut();
+            for (VariantToShot variantToShot : variantsToAddInCommonCollection) {
+                variantsToShotSecondly.add(variantToShot);
+            }
+        }
+
+        for (int x = 0; x < integerIterationToX; x++) {     // нижняя узкая полоска
+            List<VariantToShot> variantsToAddInCommonCollection = new SectorToResearch(
+                    1 + x * currentLength, 1 + integerIterationToY * currentLength,
+                    remainderIteratorToY, currentLength, currentLength).getVariantsToOut();
+            for (VariantToShot variantToShot : variantsToAddInCommonCollection) {
+                variantsToShotSecondly.add(variantToShot);
+            }
+        }
     }
 
     private int getLengthOfLargestShip() {

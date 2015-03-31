@@ -107,6 +107,9 @@ public class Player {
      */
     public OneCell.Status getFire(int x, int y) {
         OneCell.Status status = this.field[x][y].getStatus();
+        if (isThisPlayerComputer) {
+
+        }
         switch (status) {
             case DECK:
                 this.field[x][y].setStatus(OneCell.Status.DAMAGED_DECK);
