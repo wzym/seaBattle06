@@ -1,5 +1,7 @@
 package Controller;
 
+import Model.ArtificialIntelligence.ArtificialIntelligence;
+import Model.ArtificialIntelligence.VariantToShot;
 import Model.OneCell;
 import Model.OneCell.Status;
 import Model.Player;
@@ -7,37 +9,40 @@ import Model.Ship;
 import View.View;
 
 public class Game {
-    private Player player1 = new Player();
-    private Player player2 = new Player();
+    private Player player1 = new Player(false);
+    private Player player2 = new Player(true);
     private View view = new View(this);
 
-    public Game() {
+    public Game() throws InterruptedException {
         while (player1.isPlayerInGame()) {
             for (int i = 1; i <= 10; i++) {
                 for (int j = 1; j <= 10; j++) {
-                    oneTurn(i,j, false);
-                    Thread.yield();
+                    VariantToShot variantToShotNow = ArtificialIntelligence.getGameBrain().getOneVariantOfShot();
+                    System.out.println(variantToShotNow.getX() + " " + variantToShotNow.getY());
+                    oneTurn(variantToShotNow.getX(), variantToShotNow.getY(), false);
+                    Thread.sleep(500);
                 }
-
             }
         }
 
     }
 
-    private void oneTurn(int x, int y, boolean isItGamersTurn) {
-        Player player = isItGamersTurn? player2 : player1;
+    private Status oneTurn(int x, int y, boolean isItGamersTurn) {
+        Player player = isItGamersTurn? player2 : player1;      // выбираем, игрока, который совершил ход
+
         Status typeOfFiredArea = player.getFire(x, y);
+
+        if (isItGamersTurn) {       // закрашиваем соответствующую ячейку
+            view.paintCompCellByStatus(x, y, typeOfFiredArea);
+        } else {
+            view.paintCellByStatus(x, y, typeOfFiredArea);
+        }
+
         switch (typeOfFiredArea) {
-            case DECK:
-                break;
-            case WATER:
-                break;
-            case BUFFER:
-                break;
             case DAMAGED_DECK:
                 Ship injuredShip = player.getShipByCoordinates(x, y);
                 view.showMessage(injuredShip.getName() + " повреждён.");
-                break;
+                return typeOfFiredArea;
             case DAMAGED_SHIP:
                 Ship deadShip = player.getShipByCoordinates(x, y);
                 view.showMessage(deadShip.getName() + " утонул.");
@@ -49,15 +54,11 @@ public class Game {
                     }
                 }
                 if (!player.isPlayerInGame()) view.showMessage("Кораблей больше нет.");
-                break;
+                return typeOfFiredArea;
             case DAMAGED_WATER:
-                break;
+                return typeOfFiredArea;
         }
-        if (isItGamersTurn) {
-            view.paintCompCellByStatus(x, y, typeOfFiredArea);
-        } else {
-            view.paintCellByStatus(x, y, typeOfFiredArea);
-        }
+        return typeOfFiredArea;
     }
 
     public void listener(EventOfViewAndController event) {
@@ -78,6 +79,17 @@ public class Game {
                         view.paintCompCellByStatus(deck.getX(), deck.getY(), deck.getStatus());
                     }
                 }
+
+                VariantToShot[][] field = ArtificialIntelligence.getGameBrain().getExploredFieldOfOpponent();
+                for (int y = 1; y < 11; y++) {
+                    for (int x = 1; x < 11; x++) {
+                        if (field[x][y].getCurrentStatus() == VariantToShot.PresumptiveStatus.CELL_NOT_TO_SHOT) {
+                            System.out.println(field[x][y].getX() + " " + field[x][y].getY());
+                        }
+                    }
+                }
+
+                break;
         }
     }
 }

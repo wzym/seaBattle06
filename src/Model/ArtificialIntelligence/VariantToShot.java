@@ -3,15 +3,31 @@ package Model.ArtificialIntelligence;
 public class VariantToShot {
     private int x;
     private int y;
-    private presumptiveStatus currentStatus;
+    private PresumptiveStatus currentStatus;
 
-    public VariantToShot(int x, int y, presumptiveStatus currentStatus) {
+    public VariantToShot(int x, int y, PresumptiveStatus currentStatus) {
         this.x = x;
         this.y = y;
         this.currentStatus = currentStatus;
     }
 
-    public enum presumptiveStatus {
-        SHIP, CELL_TO_SHOT_FIRSTLY, CELL_TO_SHOT_SECONDLY, CELL_NOT_TO_SHOT
+    public enum PresumptiveStatus {
+        CELL_TO_SHOT, CELL_NOT_TO_SHOT
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public PresumptiveStatus getCurrentStatus() {
+        return currentStatus;
+    }
+
+    public void setCurrentStatus(PresumptiveStatus currentStatus) {
+        this.currentStatus = currentStatus;
     }
 }

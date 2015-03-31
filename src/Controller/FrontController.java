@@ -4,7 +4,11 @@ import View.View;
 
 public class FrontController {
     public static void main(String[] args) {
-        Game game = new Game();
+        try {
+            Game game = new Game();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         //View view = new View();
     }
 }

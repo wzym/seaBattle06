@@ -11,11 +11,11 @@ public class VariantOfPosition {
         this.isHorizontal = isHorizontal;
     }
 
-    public int getxOfHead() {
+    public int getXOfHead() {
         return xOfHead;
     }
 
-    public int getyOfHead() {
+    public int getYOfHead() {
         return yOfHead;
     }
 

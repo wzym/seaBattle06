@@ -7,11 +7,13 @@ package Model;
 import java.util.*;
 import Model.ArtificialIntelligence.ArtificialIntelligence;
 import Model.ArtificialIntelligence.VariantOfPosition;
+import Model.ArtificialIntelligence.VariantToShot;
 
 public class Player {
     private OneCell[][] field;
     private HashMap<String, Ship> fleet;
     private boolean isPlayerInGame;
+    private boolean isThisPlayerComputer;
 
     {   // инициализуем массив поля и коллекцию кораблей; габариты поля - из конфигурации
         this.field = new OneCell[ConfigOfGame.get().width() + 2]
@@ -24,7 +26,8 @@ public class Player {
      * При создании игрока инициализуем все ячейки поля, заливаем их водой.
      * Затем автоматически заполняем их кораблями.
      */
-    public Player() {
+    public Player(boolean isThisPlayerComputer) {
+        this.isThisPlayerComputer = isThisPlayerComputer;
         this.setWaterAndBuffer();
         this.setShipsAutomatically();
     }
@@ -39,12 +42,12 @@ public class Player {
                 this.field[j][i] = new OneCell(j, i, OneCell.Status.WATER);
             }
         }
-        for (int i = 0; i < ConfigOfGame.get().height() + 2; i++) {
+        for (int i = 0; i <= ConfigOfGame.get().height() + 1; i++) {
             this.field[0][i] = new OneCell(0, i, OneCell.Status.BUFFER);     // устанавливаем левый буфер
             this.field[ConfigOfGame.get().width() + 1][i] =
                     new OneCell(ConfigOfGame.get().width() + 1, i, OneCell.Status.BUFFER);         // правый
         }
-        for (int i = 0; i < ConfigOfGame.get().width() + 2; i++) {
+        for (int i = 1; i <= ConfigOfGame.get().width(); i++) {
             this.field[i][0] = new OneCell(i, 0, OneCell.Status.BUFFER);     // верхний буфер
             this.field[i][ConfigOfGame.get().height() + 1] =
                     new OneCell(i, ConfigOfGame.get().height() + 1, OneCell.Status.BUFFER);     // нижний
@@ -61,8 +64,8 @@ public class Player {
             for (int i = 0; i < configOfShip[1]; i++) {
                 VariantOfPosition var = ArtificialIntelligence.getGameBrain().
                         getOneVariant(configOfShip[0], this.field);
-                this.setOneShip(ConfigOfGame.nameForShip(), var.getxOfHead(),
-                        var.getyOfHead(), configOfShip[0], var.isHorizontal());
+                this.setOneShip(ConfigOfGame.nameForShip(), var.getXOfHead(),
+                        var.getYOfHead(), configOfShip[0], var.isHorizontal());
             }
         }
     }
@@ -130,8 +133,8 @@ public class Player {
         return amountOfShips;
     }
 
-    public void makeFire() {
-        ArtificialIntelligence.getGameBrain().getOneVariantOfShot();
+    public VariantToShot makeFireAutomatically() {
+        return ArtificialIntelligence.getGameBrain().getOneVariantOfShot();
     }
 
     /**
@@ -143,10 +146,6 @@ public class Player {
             if (null != ship.getCellByCoordinates(x, y)) return ship;
         }
         return null;
-    }
-
-    public OneCell[][] getField() {
-        return field;
     }
 
     public boolean isPlayerInGame() {
