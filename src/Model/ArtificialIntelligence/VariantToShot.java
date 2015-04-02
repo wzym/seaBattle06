@@ -15,6 +15,10 @@ public class VariantToShot {
         CELL_TO_SHOT, CELL_NOT_TO_SHOT
     }
 
+    public enum ResultOfShot {
+        HIT, DEATH_HIT, MISS
+    }
+
     public int getX() {
         return x;
     }

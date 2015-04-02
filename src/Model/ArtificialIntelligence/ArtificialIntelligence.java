@@ -21,8 +21,10 @@ public class ArtificialIntelligence {
 
     protected VariantToShot[][] exploredFieldOfOpponent = new VariantToShot
             [ConfigOfGame.get().width() + 2][ConfigOfGame.get().height() + 2];
-    private List<VariantToShot> variantsToShotFirstly = new ArrayList<VariantToShot>(4);
-    private List<VariantToShot> variantsToShotSecondly = new ArrayList<VariantToShot>();
+    private List<VariantToShot> variantsToShot = new ArrayList<VariantToShot>();
+    private VariantToShot currentTurn;
+    private int gageOfFilterToFind;
+    private HandledShip handledShip = null;
 
     /**
      * Разведанный флот неприятеля состоит из коллекции длин всех кораблей неприятеля.
@@ -61,6 +63,8 @@ public class ArtificialIntelligence {
                 exploredFleetOfOpponentByLength.add(type[0]);
             }
         }
+
+        gageOfFilterToFind = getLengthOfLargestShip();
     }
 
     /**
@@ -104,48 +108,50 @@ public class ArtificialIntelligence {
         return this.allPossibleVariantsOfPosition.get(key);
     }
 
-
     /**
      * Ищем корабли по очереди от самого крупного к шлюпкам. Для этого разделим разведанное поле на сектора
      * стороной, равной длине самого длинного из неподбитых кораблей. В каждом из этих секторов количеством
      * выстрелов, равным длине корабля, можно либо попасть, либо удостовериться, что здесь этого кораблся нет.
      * При попадании и непотоплении запускаем метод fatality, который обеспечит добивание корабля.
      */
-    private void setAllVariantsOfShot() {
-        variantsToShotSecondly.clear();
-        int currentLength = getLengthOfLargestShip();
-        int integerIterationToX = (int) ConfigOfGame.get().width() / currentLength;
-        int remainderIteratorToX = ConfigOfGame.get().width() - integerIterationToX * currentLength;
-        int integerIterationToY = (int) ConfigOfGame.get().height() / currentLength;
-        int remainderIteratorToY = ConfigOfGame.get().height() - integerIterationToY * currentLength;
+    private void setAllVariantsOfShotToFind() {
+        variantsToShot.clear();
+        int integerIterationToX = ConfigOfGame.get().width() / gageOfFilterToFind;
+        int remainderIteratorToX = ConfigOfGame.get().width() - integerIterationToX * gageOfFilterToFind;
+        int integerIterationToY = ConfigOfGame.get().height() / gageOfFilterToFind;
+        int remainderIteratorToY = ConfigOfGame.get().height() - integerIterationToY * gageOfFilterToFind;
 
         for (int y = 0; y < integerIterationToY; y++) {
             for (int x = 0; x < integerIterationToX; x++) {
                 List<VariantToShot> variantsToAddInCommonCollection = new SectorToResearch(
-                        1 + x * currentLength, 1 + y * currentLength, currentLength, currentLength, currentLength
-                ).getVariantsToOut();
+                        1 + x * gageOfFilterToFind, 1 + y * gageOfFilterToFind, gageOfFilterToFind, gageOfFilterToFind,
+                        gageOfFilterToFind).getVariantsToOut();
                 for (VariantToShot variantToShot : variantsToAddInCommonCollection) {
-                    variantsToShotSecondly.add(variantToShot);
+                    variantsToShot.add(variantToShot);
                 }
             }
         }
 
         for (int y = 0; y < integerIterationToY; y++) {     // правая узкая полоска
             List<VariantToShot> variantsToAddInCommonCollection = new SectorToResearch(
-                    1 + integerIterationToX * currentLength, 1 + y * currentLength,
-                    currentLength, remainderIteratorToX, currentLength).getVariantsToOut();
+                    1 + integerIterationToX * gageOfFilterToFind, 1 + y * gageOfFilterToFind,
+                    gageOfFilterToFind, remainderIteratorToX, gageOfFilterToFind).getVariantsToOut();
             for (VariantToShot variantToShot : variantsToAddInCommonCollection) {
-                variantsToShotSecondly.add(variantToShot);
+                variantsToShot.add(variantToShot);
             }
         }
 
         for (int x = 0; x < integerIterationToX; x++) {     // нижняя узкая полоска
             List<VariantToShot> variantsToAddInCommonCollection = new SectorToResearch(
-                    1 + x * currentLength, 1 + integerIterationToY * currentLength,
-                    remainderIteratorToY, currentLength, currentLength).getVariantsToOut();
+                    1 + x * gageOfFilterToFind, 1 + integerIterationToY * gageOfFilterToFind,
+                    remainderIteratorToY, gageOfFilterToFind, gageOfFilterToFind).getVariantsToOut();
             for (VariantToShot variantToShot : variantsToAddInCommonCollection) {
-                variantsToShotSecondly.add(variantToShot);
+                variantsToShot.add(variantToShot);
             }
+        }
+        if (this.variantsToShot.isEmpty()) {
+            this.gageOfFilterToFind--;
+            this.setAllVariantsOfShotToFind();
         }
     }
 
@@ -158,38 +164,52 @@ public class ArtificialIntelligence {
     }
 
     /**
-     * Если нет вариантов для добивания, запускаем механизм штатного поиска варианта.
-     * В противном случае выбираем из коллекции срочных для обработки вариантов.
+     * Контроллер для выбора одного варианта для стрельбы. Определяет, каким методом будем выбирать,
+     * затем запускает этот метод.
      */
-    public VariantToShot getOneVariantOfShot() {
-        if (variantsToShotSecondly.isEmpty()) setAllVariantsOfShot();
+    public void formVariantToCurrentTurn() {
         VariantToShot variantToReturn;
-        if (variantsToShotFirstly.isEmpty()) {
-            int key = (int) Math.round(Math.random() * (this.variantsToShotSecondly.size() - 1));
-            variantToReturn = this.variantsToShotSecondly.get(key);
-            this.variantsToShotSecondly.remove(key);
+        if (null != this.handledShip) {
+            variantToReturn = this.handledShip.getVariantToOut();
         } else {
-            int key = (int) Math.round(Math.random() * (this.variantsToShotFirstly.size() - 1));
-            variantToReturn = this.variantsToShotFirstly.get(key);
-            this.variantsToShotFirstly.remove(key);
+            if (this.variantsToShot.isEmpty()) setAllVariantsOfShotToFind();
+            int key = (int) Math.round(Math.random() * (this.variantsToShot.size() - 1));
+            variantToReturn = this.variantsToShot.get(key);
+            this.variantsToShot.remove(key);
         }
-        return variantToReturn;
+        this.currentTurn = variantToReturn;
     }
 
-    public void fatality(int x, int y) {
-        if (exploredFieldOfOpponent[x - 1][y].getCurrentStatus() != VariantToShot.PresumptiveStatus.CELL_NOT_TO_SHOT) {
-            variantsToShotFirstly.add(exploredFieldOfOpponent[x - 1][y]);
+    public VariantToShot getVariantToCurrentTurn() {
+        if (this.currentTurn == null) this.formVariantToCurrentTurn();
+        return this.currentTurn;
+    }
+
+    public void setCurrentTurn(OneCell.Status result) {
+        this.currentTurn.setCurrentStatus(VariantToShot.PresumptiveStatus.CELL_NOT_TO_SHOT);
+        switch (result) {
+            case DAMAGED_DECK:
+                if (null == this.handledShip) {
+                    this.handledShip = new HandledShip(this.currentTurn, false);
+                } else {
+                    this.handledShip.setResultOfChecking(VariantToShot.ResultOfShot.HIT);
+                }
+                break;
+            case DAMAGED_SHIP:
+                if (null != this.handledShip) {
+                    this.handledShip.setResultOfChecking(VariantToShot.ResultOfShot.DEATH_HIT);
+                } else {
+                    this.handledShip = new HandledShip(this.currentTurn, true);
+
+                }
+                this.setAllVariantsOfShotToFind();
+                this.handledShip = null;
+                break;
+            case DAMAGED_WATER:
+                if (null != this.handledShip) this.handledShip.setResultOfChecking(VariantToShot.ResultOfShot.MISS);
+                break;
         }
-        if (exploredFieldOfOpponent[x + 1][y].getCurrentStatus() != VariantToShot.PresumptiveStatus.CELL_NOT_TO_SHOT) {
-            variantsToShotFirstly.add(exploredFieldOfOpponent[x + 1][y]);
-        }
-        if (exploredFieldOfOpponent[x][y - 1].getCurrentStatus() != VariantToShot.PresumptiveStatus.CELL_NOT_TO_SHOT) {
-            variantsToShotFirstly.add(exploredFieldOfOpponent[x][y - 1]);
-        }
-        if (exploredFieldOfOpponent[x][y + 1].getCurrentStatus() != VariantToShot.PresumptiveStatus.CELL_NOT_TO_SHOT) {
-            variantsToShotFirstly.add(exploredFieldOfOpponent[x][y + 1]);
-        }
-        System.out.println(variantsToShotFirstly.size());
+        formVariantToCurrentTurn();
     }
 
     public VariantToShot[][] getExploredFieldOfOpponent() {

@@ -131,7 +131,6 @@ public class HandledShip {
     }
 
     public void finalizeBuffer() {
-        System.out.println(body.size());
         for (VariantToShot variantToShot : body) {
             int xStart = variantToShot.getX();
             int yStart = variantToShot.getY();
