@@ -14,11 +14,14 @@ public class Game {
     private View view = new View(this);
 
     public Game() throws InterruptedException {
+//        for (int i = 0; i < 100; i++) {
+//            System.out.println(Math.round(Math.random() * 1));
+//        }
         while (player1.isPlayerInGame()) {
             for (int i = 1; i <= 10; i++) {
                 for (int j = 1; j <= 10; j++) {
-                    VariantToShot variantToShotNow = ArtificialIntelligence.getGameBrain().getOneVariantOfShot();
-                    oneTurn(variantToShotNow.getX(), variantToShotNow.getY(), false);
+                    VariantToShot turn = player2.makeFireAutomatically();
+                    player2.getResultOfFire(oneTurn(turn.getX(), turn.getY(), false));
                     Thread.sleep(500);
                 }
             }
@@ -27,7 +30,7 @@ public class Game {
     }
 
     private Status oneTurn(int x, int y, boolean isItGamersTurn) {
-        Player player = isItGamersTurn? player2 : player1;      // выбираем, игрока, который совершил ход
+        Player player = isItGamersTurn? player2 : player1;      // выбираем игрока, по полю которого совершён выстрел
 
         Status typeOfFiredArea = player.getFire(x, y);
 

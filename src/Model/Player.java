@@ -107,9 +107,6 @@ public class Player {
      */
     public OneCell.Status getFire(int x, int y) {
         OneCell.Status status = this.field[x][y].getStatus();
-        if (isThisPlayerComputer) {
-
-        }
         switch (status) {
             case DECK:
                 this.field[x][y].setStatus(OneCell.Status.DAMAGED_DECK);
@@ -137,7 +134,15 @@ public class Player {
     }
 
     public VariantToShot makeFireAutomatically() {
-        return ArtificialIntelligence.getGameBrain().getOneVariantOfShot();
+        /*VariantToShot variantToShotNow = ArtificialIntelligence.getGameBrain().formVariantToCurrentTurn();
+        if (isThisPlayerComputer) {
+            ArtificialIntelligence.getGameBrain().registerMadeTurn(variantToShotNow.getX(), variantToShotNow.getY());
+        }*/
+        return ArtificialIntelligence.getGameBrain().getVariantToCurrentTurn();
+    }
+
+    public void getResultOfFire(OneCell.Status result) {
+        ArtificialIntelligence.getGameBrain().setCurrentTurn(result);
     }
 
     /**
