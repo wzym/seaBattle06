@@ -14,19 +14,27 @@ public class Game {
     private View view = new View(this);
 
     public Game() throws InterruptedException {
+        this.autoTurn();
+    }
+
+    private synchronized void autoTurn() throws InterruptedException {
         while (player1.isPlayerInGame() && player2.isPlayerInGame()) {
-            VariantToShot turn = player2.makeFireAutomatically();
-            player2.getResultOfFire(oneTurn(turn.getX(), turn.getY(), false));
             Thread.sleep(500);
+            VariantToShot turn = player2.makeFireAutomatically();
+            Status resultOfFire = oneTurn(turn.getX(), turn.getY(), false);
+            player2.getResultOfFire(resultOfFire);
+            if (resultOfFire != Status.DAMAGED_DECK && resultOfFire != Status.DAMAGED_SHIP) {
+                wait();
+            }
         }
     }
 
     private Status oneTurn(int x, int y, boolean isItGamersTurn) {
         Player player = isItGamersTurn? player2 : player1;      // выбираем игрока, по полю которого совершён выстрел
 
-        Status typeOfFiredArea = player.getFire(x, y);
+        Status typeOfFiredArea = player.getFire(x, y);  // меняем статус ячейки, по которой стреляли, получаем новый
 
-        if (isItGamersTurn) {       // закрашиваем соответствующую ячейку
+        if (isItGamersTurn) {       // закрашиваем соответствующую ячейку в соответствии с новым статусом
             view.paintCompCellByStatus(x, y, typeOfFiredArea);
         } else {
             view.paintCellByStatus(x, y, typeOfFiredArea);
@@ -55,10 +63,13 @@ public class Game {
         return typeOfFiredArea;
     }
 
-    public void listener(EventOfViewAndController event) {
+    public synchronized void listener(EventOfViewAndController event) {
         switch (event.getKindOfEvent()) {
             case TURN:
-                oneTurn(event.getX(), event.getY(), true);
+                Status resultOfFire = oneTurn(event.getX(), event.getY(), true);
+                if (resultOfFire != Status.DAMAGED_SHIP && resultOfFire != Status.DAMAGED_DECK) {
+                    notify();
+                }
                 break;
             case START:
                 for (Ship ship : player1.getFleet().values()) {
