@@ -14,19 +14,11 @@ public class Game {
     private View view = new View(this);
 
     public Game() throws InterruptedException {
-//        for (int i = 0; i < 100; i++) {
-//            System.out.println(Math.round(Math.random() * 1));
-//        }
-        while (player1.isPlayerInGame()) {
-            for (int i = 1; i <= 10; i++) {
-                for (int j = 1; j <= 10; j++) {
-                    VariantToShot turn = player2.makeFireAutomatically();
-                    player2.getResultOfFire(oneTurn(turn.getX(), turn.getY(), false));
-                    Thread.sleep(500);
-                }
-            }
+        while (player1.isPlayerInGame() && player2.isPlayerInGame()) {
+            VariantToShot turn = player2.makeFireAutomatically();
+            player2.getResultOfFire(oneTurn(turn.getX(), turn.getY(), false));
+            Thread.sleep(500);
         }
-
     }
 
     private Status oneTurn(int x, int y, boolean isItGamersTurn) {
@@ -81,7 +73,6 @@ public class Game {
                         view.paintCompCellByStatus(deck.getX(), deck.getY(), deck.getStatus());
                     }
                 }
-
                 VariantToShot[][] field = ArtificialIntelligence.getGameBrain().getExploredFieldOfOpponent();
                 for (int y = 1; y < 11; y++) {
                     for (int x = 1; x < 11; x++) {
@@ -90,7 +81,6 @@ public class Game {
                         }
                     }
                 }
-
                 break;
         }
     }

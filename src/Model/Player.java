@@ -134,10 +134,6 @@ public class Player {
     }
 
     public VariantToShot makeFireAutomatically() {
-        /*VariantToShot variantToShotNow = ArtificialIntelligence.getGameBrain().formVariantToCurrentTurn();
-        if (isThisPlayerComputer) {
-            ArtificialIntelligence.getGameBrain().registerMadeTurn(variantToShotNow.getX(), variantToShotNow.getY());
-        }*/
         return ArtificialIntelligence.getGameBrain().getVariantToCurrentTurn();
     }
 
